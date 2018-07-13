@@ -1,0 +1,109 @@
+/** Custom CSS stylesheet
+Avoiding existing stylesheet support for now
+
+Author: Lucas Dutton
+**/
+
+/* body margin */
+body { margin: 0 }
+
+/* Top navigation bar */
+div.topnav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    display: flex;
+    overflow: hidden;
+    background-color: #333A56;
+    font-family: "PT Sans";
+    justify-content: space-between
+}
+
+ul.topnav {
+    list-style-type: none;
+    display: inline-block;
+    float: right;
+    margin: 0;
+}
+
+ul.topnav li {float: right;}
+
+ul.topnav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 14px;
+    text-decoration: none;
+}
+
+ul.topnav li a:hover:not(.active) {background-color: #E14658;}
+
+@media screen and (max-width: 600px) {
+    ul.topnav li.right,
+    ul.topnav li {float: none;}
+}
+
+#titlename {
+    margin: 0;
+    padding-left: 14px;
+    display: inline-block;
+    color: white;
+    text-decoration: none;
+    font-size: 30px;
+}
+
+/* Hero Image portion */
+.hero {
+    /* sizing */
+    width: 100vw;
+    height: 100vh;
+
+    /* flex */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("hero.jpg");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+}
+
+.hero h1 {
+    font-size: 5em;
+    margin-top: 0;
+    margin-bottom: 0.5em;
+}
+
+.hero-inner {
+    color: white;
+    font-family: "Roboto";
+}
+
+.hero-inner .btn {
+    /* Positioning and sizing */
+    display: block;
+    width: 150px;
+
+    /* Padding, margins */
+    padding: 1em;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+
+    color:  white;
+    text-decoration: none;
+    font-size: 1.5em;
+    background-color: #E14658;
+    border: 3px solid white;
+    border-radius: 10px;
+}
+
+.hero-inner .btn:hover {
+    background-color: #e81932;
+}
