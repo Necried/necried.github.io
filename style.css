@@ -5,7 +5,16 @@ Author: Lucas Dutton
 **/
 
 /* body margin */
-body { margin: 0 }
+body {
+    margin: 0;
+    overflow-x: hidden; /* \edcomm{LMD}{Somehow needed to prevent vertical page scrolling- what are consequences?} */
+ }
+
+/* invisible space padding between sections */
+.pad {
+    width: 98%;
+    height: 2.25em;
+}
 
 /* Top navigation bar */
 div.topnav {
@@ -15,7 +24,7 @@ div.topnav {
     margin: 0;
     display: flex;
     overflow: hidden;
-    background-color: #333A56;
+    background-color: #333;
     font-family: "PT Sans";
     justify-content: space-between
 }
@@ -31,7 +40,7 @@ ul.topnav li {float: right;}
 
 ul.topnav li a {
     display: block;
-    color: white;
+    color: #C0B3A0;
     text-align: center;
     padding: 14px 14px;
     text-decoration: none;
@@ -40,15 +49,14 @@ ul.topnav li a {
 ul.topnav li a:hover:not(.active) {background-color: #E14658;}
 
 @media screen and (max-width: 600px) {
-    ul.topnav li.right,
-    ul.topnav li {float: none;}
+    ul.topnav li {display: none;}
 }
 
 #titlename {
     margin: 0;
     padding-left: 14px;
     display: inline-block;
-    color: white;
+    color: #C0B3A0;
     text-decoration: none;
     font-size: 30px;
 }
@@ -57,7 +65,7 @@ ul.topnav li a:hover:not(.active) {background-color: #E14658;}
 .hero {
     /* sizing */
     width: 100vw;
-    height: 100vh;
+    height: 80vh;
 
     /* flex */
     display: flex;
@@ -66,7 +74,7 @@ ul.topnav li a:hover:not(.active) {background-color: #E14658;}
 
     text-align: center;
 
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("hero.jpg");
+    background-image:  url("hero.jpg");
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -75,14 +83,18 @@ ul.topnav li a:hover:not(.active) {background-color: #E14658;}
 }
 
 .hero h1 {
-    font-size: 5em;
+    font-size: 4em;
     margin-top: 0;
     margin-bottom: 0.5em;
 }
 
 .hero-inner {
-    color: white;
+    color: #22252C;
     font-family: "Roboto";
+}
+
+.hero-inner p{
+    font-size: 18px;
 }
 
 .hero-inner .btn {
@@ -91,19 +103,181 @@ ul.topnav li a:hover:not(.active) {background-color: #E14658;}
     width: 150px;
 
     /* Padding, margins */
-    padding: 1em;
+    padding: 0.8em;
     margin-top: 50px;
     margin-left: auto;
     margin-right: auto;
 
+    background-color: #E14658;
     color:  white;
     text-decoration: none;
     font-size: 1.5em;
-    background-color: #E14658;
-    border: 3px solid white;
+    border: 3px solid #3F3250;
     border-radius: 10px;
 }
 
 .hero-inner .btn:hover {
     background-color: #e81932;
+}
+
+#highlight {
+    color: #3F3250;
+    font-size: 20px;
+}
+
+/* About Section */
+.column3 {
+    float: left;
+    width: 33.33%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: flex;
+    clear: both;
+}
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width:600px) {
+    .column3 {
+        width: 100%;
+    }
+}
+
+.icon {
+    text-align: center;
+    color: #C0B3A0;
+}
+
+.center {
+    margin: 0;
+    text-align: center;
+    font-size: 2.0em;
+    color: #22252C;
+    text-decoration: bold;
+    font-family: "Roboto";
+}
+
+.text-block {
+    text-align: center;
+    color: #22252C;
+    font-family: "PT Sans";
+    font-size: 16px;
+    padding-top: 20px;
+    padding-bottom: 35px;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.table-block {
+    display: block;
+    padding-top: 20px;
+    padding-bottom: 35px;
+    padding-left: 50px;
+    padding-right: 50px;
+    color: #22252C;
+    font-family: "PT Sans";
+    font-size: 16px;
+}
+
+.table-block td {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+/* Experience section */
+.singlerow {
+    /* sizing */
+    width: 100vw;
+    height: 75vh;
+
+    /* flex */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    text-align: center;
+
+    background-color: #C0B3A0;
+}
+
+#encroach {
+    margin-top: 5%;
+    margin-left: 20%;
+    margin-right: 20%;
+    font-size: 24px;
+    text-align: center;
+    color: #22252C;
+    font-family: "PT Sans";
+}
+
+/* Connect/Showcase section */
+.column2 {
+    float: left;
+    width: 50%;
+}
+
+@media screen and (max-width:600px) {
+    .column2 {
+        width: 100%;
+    }
+}
+
+#Showcase {
+    background-color: #222;
+}
+
+
+.center-white {
+    margin: 1.0em;
+    text-align: center;
+    font-size: 2.0em;
+    color: white;
+    text-decoration: bold;
+    font-family: "Roboto";
+}
+
+.under-construction {
+    font-size: 48px;
+    text-align: center;
+    margin: 2.0em;
+    font-family: "Roboto";
+    color: white;
+}
+
+/* footer */
+
+footer {
+    padding-top: 5px;
+    overflow: hidden;
+    background-color: black;
+    direction: flex;
+    text-align: center;
+    flex-direction: row;
+}
+
+ul.footer li {
+    list-style-type: none;
+    display: inline;
+}
+
+ul.footer li a {
+    color: #C0B3A0;
+    margin-left: 1em;
+    margin-right: 1.1em;
+    text-decoration: none;
+    font-family: "PT Sans";
+    font-size: 14px;
+}
+
+.connect {
+    display: inline;
+    color: #C0B3A0;
+    text-align: center;
+    font-family: "Roboto";
+    font-size: 25px;
+    text-decoration: none;
+    margin-left: 0.5em;
 }

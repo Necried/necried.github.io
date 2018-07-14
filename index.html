@@ -10,26 +10,101 @@
 <link rel="stylesheet" type="text/css" href="style.css">
 <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=PT+Sans" />
 <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
   <div class="topnav">
     <a id="titlename" href="#home">Lucas Dutton</a>
     <ul class="topnav">
-      <li><a href="#Connect">Connect</a></li>
+      <li><a href="#Showcase">Showcase</a></li>
       <li><a href="#Experience">Experience</a></li>
       <li><a href="#About">About</a></li>
     </ul>
   </div>
 
-  <section class="hero">
+  <section class="hero" id="home">
     <div class="hero-inner">
-      <h1>Software Developer</h1>
-      <p>Competitive/Game programming with a touch of Haskell in between.</p>
-      <p>(Website is a work in progress: check in soon!)</p>
+      <h1>Lucas Dutton</h1>
+      <p><b id="highlight">Software Developer | Undergraduate Student</b></p>
       <a href="resume.pdf" class="btn">View Resume</a>
     </div>
   </section>
+
+  <div class="pad" id="About"></div>
+
+  <div class="row">
+    <div class="column3">
+      <h2 class="icon"><i class="material-icons" style="font-size:48px; ">help</i></h2>
+      <h5 class="center">About me</h5>
+      <p class="text-block">I'm a second year Software Engineering student studying at McMaster University.
+        Currently, I am assisting with research- see the  <b>Experience</b> section below!</p>
+    </div>
+
+    <div class="column3">
+      <h2 class="icon"><i class="material-icons" style="font-size:48px; ">games</i></h2>
+      <h5 class="center">Interests</h5>
+      <table class="table-block">
+        <tbody>
+          <tr>
+            <td>&#9658; Functional Programming & Applications</td>
+          </tr>
+          <tr>
+            <td>&#9658; Game Development with Unity</td>
+          </tr>
+          <tr>
+            <td>&#9658; Competitive Programming</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="column3">
+      <h2 class="icon"><i class="material-icons" style="font-size:48px; ">code</i></h2>
+      <h5 class="center">Languages</h5>
+      <table class="table-block">
+        <tbody>
+          <tr>
+            <td>&#9658; Haskell</td>
+          </tr>
+          <tr>
+            <td>&#9658; C, C++, C#</td>
+          </tr>
+          <tr>
+            <td>&#9658; Python, Java</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="pad"></div>
+
+  <div class="singlerow" id="Experience">
+    <h1 class="center" style="font-size:3.5em">Experience</h1>
+    <div id="encroach">
+      <p>This summer, I worked with other research students on implementing and
+        testing new elementary math functions for hardware. In collaboration with IBM, we published
+        a research paper detailing the progress of our work. (Once the paper is approved, the link will
+        show up here)
+      </p>
+    </div>
+  </div>
+
+  <div class="singlerow" id="Showcase">
+    <h5 class="center-white">Showcase</h2>
+      <p class="under-construction">Coming Soon!</p>
+  </div>
+
+  <footer class="footer">
+    <div class="connect"><b>Connect</b></div>
+    <ul class="footer">
+      <li><a href="#Showcase">Github</a></li>
+      <li><a href="#Experience">Linkedin</a></li>
+      <li><a href="#About">Hackerrank</a></li>
+    </ul>
+  </footer>
 <!-- Script -->
-<script src="js/script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
