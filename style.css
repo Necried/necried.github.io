@@ -203,6 +203,13 @@ ul.topnav li a:hover:not(.active) {background-color: #E14658;}
     background-color: #C0B3A0;
 }
 
+@media screen and (max-width:600px) {
+    .singlerow {
+        height: 100vh;
+    }
+}
+
+
 #encroach {
     margin-top: 5%;
     margin-left: 20%;
