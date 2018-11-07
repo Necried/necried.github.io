@@ -205,7 +205,8 @@ ul.topnav li a:hover:not(.active) {background-color: #E14658;}
 
 @media screen and (max-width:600px) {
     .singlerow {
-        height: 100vh;
+        height: 90vh;
+        font-size: 14px;
     }
 }
 
@@ -220,12 +221,26 @@ ul.topnav li a:hover:not(.active) {background-color: #E14658;}
     font-family: "PT Sans";
 }
 
+@media screen and (max-width:600px) {
+    #encroach {
+        height: auto;
+        font-size: 14px;
+    }
+}
+
 /* Creating a flex location to hold external links */
 .flexlinks {
     align-content: center;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
+    font-size: 24px;
+}
+
+@media screen and (max-width:600px) {
+    .flexlinks {
+        font-size: 14px;
+    }
 }
 
 /* Hyperlink styling */
