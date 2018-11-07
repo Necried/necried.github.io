@@ -12,12 +12,13 @@
 <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=PT+Sans" />
 <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
   <div class="topnav">
     <a id="titlename" href="#home">Lucas Dutton</a>
     <ul class="topnav">
-      <li><a href="#Showcase">Showcase</a></li>
+      <li><a href="#Projects">Projects</a></li>
       <li><a href="#Experience">Experience</a></li>
       <li><a href="#About">About</a></li>
     </ul>
@@ -37,8 +38,21 @@
     <div class="column3">
       <h2 class="icon"><i class="material-icons" style="font-size:48px; ">help</i></h2>
       <h5 class="center">About me</h5>
-      <p class="text-block">I'm a second year Software Engineering student studying at McMaster University.
-        Currently, I am assisting with research- see the  <b>Experience</b> section below!</p>
+      <table class="table-block">
+        <tbody>
+          <tr>
+            <td>&#9658; I'm a (soon to be) third year Software Engineering student in McMaster University.</td>
+          </tr>
+          <tr>
+            <td>&#9658; Currently on hiatus from studying! Doing a year-long co-op as a research assistant,
+              see <b>Experience</b>.
+            </td>
+          </tr>
+          <tr>
+            <td>&#9658; Part of the McMaster Competitive Programming team competing in the 2018 ECNA ICPC</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="column3">
@@ -50,10 +64,10 @@
             <td>&#9658; Functional Programming & Applications</td>
           </tr>
           <tr>
-            <td>&#9658; Game Development with Unity</td>
+            <td>&#9658; Competitive Programming & Algorithms</td>
           </tr>
           <tr>
-            <td>&#9658; Competitive Programming</td>
+            <td>&#9658; Game Development with Unity</td>
           </tr>
         </tbody>
       </table>
@@ -84,25 +98,48 @@
   <div class="singlerow" id="Experience">
     <h1 class="center" style="font-size:3.5em">Experience</h1>
     <div id="encroach">
-      <p>This summer, I worked with other research students on implementing and
-        testing new elementary math functions for hardware. In collaboration with IBM, we published
-        a research paper detailing the progress of our work. (Once the paper is approved, the link will
-        show up here)
+      <p>In Summer 2018, I worked with other research students on implementing and
+        testing new elementary math functions for IBM processors in Haskell. We published
+        a research paper detailing the progress of our work.
       </p>
+      <p>
+        This was part of a larger CAS project with IBM on "Exploring Approximation Algorithms for 
+        Instruction Scheduling", which won the Project of the Year award in CASCON 2018.
+      </p>
+      <div class="flexlinks">
+          <a href="https://dl.acm.org/citation.cfm?id=3291309" id="hlink">
+            <h4><i class="material-icons" style="font-size: 24px;">picture_as_pdf</i>
+              Research paper
+            </h4>
+          </a>
+          <a href="https://www.eng.mcmaster.ca/news/computing-and-software-research-team-wins-ibm-project-year-award" id="hlink">
+            <h4><i class="material-icons" style="font-size: 24px;">rss_feed</i>
+              Article
+            </h4>
+          </a>
+      </div>
     </div>
   </div>
 
-  <div class="singlerow" id="Showcase">
-    <h5 class="center-white">Showcase</h2>
+  <div class="singlerow" id="Projects">
+    <h5 class="center-white">Projects</h2>
       <p class="under-construction">Coming Soon!</p>
   </div>
 
   <footer class="footer">
-    <div class="connect"><b>Connect</b></div>
     <ul class="footer">
-      <li><a href="https://github.com/Necried/">Github</a></li>
-      <li><a href="https://ca.linkedin.com/in/lucas-matthew-dutton-50061b133">Linkedin</a></li>
-      <li><a href="https://www.hackerrank.com/profile/luke97">Hackerrank</a></li>
+      <li><a href="https://github.com/Necried/">
+        <i style="font-size:24px" class="fa">&#xf09b;</i>
+      </a></li>
+      <li><a href="https://ca.linkedin.com/in/lucas-matthew-dutton-50061b133">
+        <i style="font-size:24px" class="fa">&#xf08c;</i>
+      </a></li>
+      <li><a href="https://www.hackerrank.com/profile/luke97">
+        <svg aria-labelledby="simpleicons-hackerrank-icon" role="img" style="width:24px; height:24px;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <title id="simpleicons-hackerrank-icon">HackerRank icon</title>
+          <path fill="white" d="M12 0c1.285 0 9.75 4.886 10.392 6 .645 1.115.645 10.885 0 12S13.287 24 12 24s-9.75-4.885-10.395-6c-.641-1.115-.641-10.885 0-12C2.25 4.886 10.715 0 12 0zm2.295 6.799c-.141 0-.258.115-.258.258v3.875H9.963V6.908h.701c.141 0 .254-.115.254-.258 0-.094-.049-.176-.123-.221L9.223 4.92c-.049-.063-.141-.109-.226-.109-.084 0-.16.045-.207.107L7.11 6.43c-.072.045-.12.126-.12.218 0 .143.113.258.255.258h.704l.008 10.035c0 .145.111.258.254.258h1.492c.142 0 .259-.115.259-.256v-4.004h4.073v4.152h-.699c-.143 0-.256.115-.256.258 0 .092.048.174.119.219l1.579 1.51c.044.061.141.109.225.109.085 0 .159-.045.208-.109l1.679-1.51c.072-.045.12-.127.12-.219 0-.143-.115-.258-.255-.258h-.704l-.007-10.034c0-.145-.114-.26-.255-.26h-1.494v.002z"/>
+          </svg>
+      </a></li>
     </ul>
   </footer>
 <!-- Script -->

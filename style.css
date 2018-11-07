@@ -65,7 +65,7 @@ ul.topnav li a:hover:not(.active) {background-color: #E14658;}
 .hero {
     /* sizing */
     width: 100vw;
-    height: 80vh;
+    height: 90vh;
 
     /* flex */
     display: flex;
@@ -211,7 +211,7 @@ ul.topnav li a:hover:not(.active) {background-color: #E14658;}
 
 
 #encroach {
-    margin-top: 5%;
+    margin-top: 2%;
     margin-left: 20%;
     margin-right: 20%;
     font-size: 24px;
@@ -220,7 +220,25 @@ ul.topnav li a:hover:not(.active) {background-color: #E14658;}
     font-family: "PT Sans";
 }
 
-/* Connect/Showcase section */
+/* Creating a flex location to hold external links */
+.flexlinks {
+    align-content: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+/* Hyperlink styling */
+#hlink {
+    text-decoration: none;
+    color: #222;
+}
+
+#hlink:hover {
+    color: #e81932;
+}
+
+/* Connect/Projects section */
 .column2 {
     float: left;
     width: 50%;
@@ -232,7 +250,7 @@ ul.topnav li a:hover:not(.active) {background-color: #E14658;}
     }
 }
 
-#Showcase {
+#Projects {
     background-color: #222;
 }
 
@@ -257,7 +275,9 @@ ul.topnav li a:hover:not(.active) {background-color: #E14658;}
 /* footer */
 
 footer {
-    padding-top: 5px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
     overflow: hidden;
     background-color: black;
     direction: flex;
@@ -271,20 +291,10 @@ ul.footer li {
 }
 
 ul.footer li a {
-    color: #C0B3A0;
+    color: white;
     margin-left: 1em;
     margin-right: 1.1em;
     text-decoration: none;
     font-family: "PT Sans";
     font-size: 16px;
-}
-
-.connect {
-    display: inline;
-    color: #C0B3A0;
-    text-align: center;
-    font-family: "Roboto";
-    font-size: 25px;
-    text-decoration: none;
-    margin-left: 0.5em;
 }
