@@ -327,14 +327,6 @@ carouselAboutPage model =
 
 tabsAboutPage model =
     let
-        aboutBlurb =
-            Markdown.toHtml [ class "content" ] """
-I'm a third-year software engineering undergraduate studying in McMaster University. I love developing
-a wide variety of software, with emphasis on efficiency and safety. On my free time,
-I code as a hobby, play video games, and read fictional books and educational resources
-on Category Theory, Abstract Algebra and Algorithms. More in #Interests#!
-"""
-
         iconCustom =
             [ color grey, fontSize "1.5em" ]
 
@@ -390,6 +382,33 @@ on Category Theory, Abstract Algebra and Algorithms. More in #Interests#!
             [ Grid.col [] [ span [] [ tabViews ] ] ]
         ]
 
+        
+aboutBlurb =
+    let
+        aboutText = Markdown.toHtml [ class "content" ] """
+I'm a third-year software engineering undergraduate studying in McMaster University. I love developing
+a wide variety of software, with emphasis on efficiency and safety. On my free time,
+I code as a hobby, play video games, and read fictional books and educational resources
+on Category Theory, Abstract Algebra and Algorithms. More in **Interests**!
+"""
+        publications = List.map (\x -> li [] [toMD x])
+          [ "[ResearchGate](https://dl.acm.org/author_page.cfm?id=99659321607&coll=DL&dl=ACM&trk=0)"]
+
+        achievements = List.map (\x -> li [] [toMD x])
+          [ "[CASCON 2018](https://www-01.ibm.com/ibm/cas/cascon/awards.jsp) - Project of the Year"
+          , "[CASCON 2018](https://www-01.ibm.com/ibm/cas/cascon/awards.jsp) - Student of the Year - Honorable Mention"
+          , "ECNA ICPC 2018- 31st place"
+          ]
+   in
+   span [ Spacing.mt4 ]
+   [ Grid.row [ Row.attrs [Spacing.mt4 ] ]
+   [ Grid.col [] [aboutText]
+   ]
+   , Grid.row [ Row.centerXs, Row.attrs [Spacing.mt4 ] ]
+   [ Grid.col [ Col.md6 ] [ h4 [] [ text "Publications" ], span [] [ ul [] publications ] ]
+   , Grid.col [ Col.md6 ] [ h4 [] [ text "Achievements" ], span [] [ ul [ ] achievements ] ]
+   ]
+   ]
 
 languagesSection page =
     let
@@ -418,6 +437,7 @@ languagesSection page =
 
         selectedBlurb = case selectedLang of
                             "Elm" -> elmBlurb
+                            "Agda" -> agdaBlurb
                             _     -> haskellBlurb
                 
         haskellBlurb = Markdown.toHtml [] """
@@ -442,6 +462,16 @@ functional programming!
 - This site is a redesign of my old static site, which was made using pure HTML, CSS and Javascript. Woah!
 - Elm is surprisingly fast, and competitive with other mainstream front-end Javascript frameworks. See
   [here](https://elm-lang.org/blog/blazing-fast-html-round-two) for the details.
+"""
+
+        agdaBlurb = Markdown.toHtml [] """
+Mainly used as a theorem prover, Agda is a dependently-typed language which enforces termination of programs.
+My intererst in Agda is currently mostly academic in nature.
+
+#### Current Focus
+- Learning dependent type theory
+- Learning Agda's rich syntax, and standard libraries
+- Agda's compiler backend
 """
     in
     Grid.containerFluid [ Spacing.mt4 ]

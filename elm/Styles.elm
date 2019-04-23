@@ -4,6 +4,7 @@ import Bootstrap.Grid as Grid
 import Bootstrap.Utilities.Spacing as Spacing
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Markdown exposing (..)
 
 
 lightGrey =
@@ -89,3 +90,5 @@ myFonts =
 
 outline =
     style "outline"
+
+toMD = Markdown.toHtml [ class "content" ]
