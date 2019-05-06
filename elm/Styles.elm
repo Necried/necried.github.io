@@ -22,6 +22,8 @@ dimGrey =
 fontAwesome iconName =
     i [ class <| "fa fa-" ++ iconName, attribute "aria-hidden" "true" ] []
 
+fontAwesomeLink linkName iconName attrs =
+    a ([ href linkName, color dimGrey ] ++ attrs ) [ fontAwesome iconName ]
 
 largeBlank =
     Grid.row []
@@ -31,7 +33,7 @@ largeBlank =
             ]
         ]
 
-
+        
 backgroundImage =
     style "background-image"
 
