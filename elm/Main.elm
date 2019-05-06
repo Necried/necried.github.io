@@ -1,4 +1,4 @@
-module Main exposing (Model, Msg(..), Page(..), Read, ReadContent, aboutView, carouselAboutPage, init, main, navbar, pageTitle, subscriptions, tabsAboutPage, update, view)
+module Main exposing (..)
 
 import Bootstrap.Button as Button
 import Bootstrap.CDN as CDN
@@ -27,13 +27,11 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import List exposing (map)
 import Markdown exposing (..)
-import Styles as Style exposing (..)
 import Url as Url
 
-
-type alias Read =
-    String
-
+import Styles as Style exposing (..)
+import Styles exposing (externalLink)
+import Routes exposing (..)
 
 type alias ReadContent =
     { title : String
@@ -46,19 +44,13 @@ type alias AboutState =
     { languageSelection : String }
 
 
-type Page
-    = About AboutState
-    | Interests
-    | ReadMenu (List Read)
-    | ReadPage ReadContent
-
-
 type alias Model =
     { navbarState : Navbar.State
     , page : Page
     , key : Nav.Key
     , carouselState : Carousel.State
     , tabState : Tab.State
+    , aboutState : AboutState
     }
 
 
@@ -70,10 +62,11 @@ init _ url key =
 
         initModel =
             { navbarState = navbarState
-            , page = About { languageSelection = "Haskell" }
+            , page = About
             , key = key
             , carouselState = Carousel.initialState
             , tabState = Tab.initialState
+            , aboutState = { languageSelection = "Haskell" }
             }
     in
     ( initModel, navbarCmd )
@@ -131,7 +124,7 @@ update msg model =
                     )
 
         UrlChanged url ->
-            todo "todo"
+            urlUpdate url model
 
         CarouselMsg subMsg ->
             ( { model | carouselState = Carousel.update subMsg model.carouselState }
@@ -149,8 +142,8 @@ update msg model =
                     model.page
             in
             case model.page of
-                About aboutState ->
-                    ( { model | page = About { aboutState | languageSelection = lang } }
+                About ->
+                    ( { model | aboutState = { languageSelection = lang } }
                     , Cmd.none
                     )
 
@@ -159,6 +152,14 @@ update msg model =
                     , Cmd.none
                     )
 
+urlUpdate : Url.Url -> Model -> ( Model, Cmd Msg )
+urlUpdate url model =
+    case Routes.decode url of
+        Nothing ->
+            ( { model | page = NotFound }, Cmd.none )
+
+        Just page ->
+            ( { model | page = page }, Cmd.none )
 
 view : Model -> Document Msg
 view model =
@@ -170,25 +171,22 @@ view model =
             pageTitle True <| model.page
 
         content =
-            aboutView model
+            case model.page of
+                Interests ->
+                    interests
+
+                _ ->
+                    aboutView model
 
         layout =
             Grid.containerFluid [] [ content, largeBlank ]
     in
-    { title = title, body = [ CDN.stylesheet, CDN.fontAwesome, nav, layout ] }
+    { title = title, body = [ CDN.fontAwesome, nav, layout, viewFooter ] }
 
 
 navbar : Model -> Html Msg
 navbar model =
     let
-        aboutDefault =
-            case model.page of
-                About aboutState ->
-                    About aboutState
-
-                _ ->
-                    About { languageSelection = "Haskell" }
-
         pageItems =
             map
                 (\page ->
@@ -202,7 +200,7 @@ navbar model =
                     else
                         Navbar.itemLink [ href pageStr ] [ text pageStr ]
                 )
-                [ aboutDefault, Interests, ReadMenu [] ]
+                [ About, Interests, ReadMenu ]
     in
     Navbar.config NavbarMsg
         |> Navbar.withAnimation
@@ -216,7 +214,7 @@ navbar model =
 pageTitle : Bool -> Page -> String
 pageTitle isTitle page =
     case page of
-        About _ ->
+        About ->
             if isTitle then
                 "Lucas Dutton"
 
@@ -226,14 +224,70 @@ pageTitle isTitle page =
         Interests ->
             "Interests"
 
-        ReadMenu _ ->
+        ReadMenu ->
             "Reads"
 
         ReadPage content ->
-            content.title
+            content
 
+        Home ->
+            ""
 
+        NotFound ->
+            "404 Not Found"
+                
+viewFooter : Html Msg
+viewFooter =
+    let
+        links =
+            ul [ class "bd-footer-links" ]
+                    [ li []
+                          [ Style.fontAwesome "github"
+                          , span [ Spacing.mr1 ] []
+                          , Style.externalLink "https://github.com/Necried" "Github"
+                          ]
+                    , li []
+                          [ Style.fontAwesome "linkedin"
+                          , span [ Spacing.mr1 ] []
+                          , Style.externalLink "https://www.linkedin.com/in/lucas-matthew-dutton-50061b133/" "LinkedIn"
+                          ]
+                    , li []
+                          [ Style.fontAwesome "hackerrank"
+                          , span [ Spacing.mr1 ] []
+                          , Style.externalLink "https://www.hackerrank.com/luke97" "HackerRank"
+                          ]
+                    ]
+            
+    in
+    footer [ class "bd-footer", backgroundColor lightGrey ]
+        [ Grid.containerFluid [  ]
+              [ Grid.row []
+                    [ Grid.col [ Col.offsetMd2, Col.attrs [fontSize "18px"] ] [ text "Connect with me" ] ]
+              , Grid.row []
+                    [ Grid.col [ Col.offsetMd2 ] [ links ]
+                    ]
+              , Grid.row []
+                    [ Grid.col [ Col.offsetMd2 ] [ text "Developed with Elm 0.19 and elm-bootstrap" ]
+                    ]
+              ]
+        ]
 
+{-              
+              [ ul [ class "bd-footer-links" ]
+                    [ li []
+                          [ i [ class "fa fa-github", attribute "aria-hidden" "true" ] []
+                          , Style.externalLink "https://github.com/Necried" "Github"
+                          ]
+                    , li []
+                          [ fontAwesome "linkedin"
+                          , Style.externalLink "https://www.linkedin.com/in/lucas-matthew-dutton-50061b133/" "LinkedIn"
+                          ]
+                    ]
+              , p []
+                  [ text "Developed with Elm 0.19 and elm-bootstrap" ]
+              ]
+        ]
+-}
 -- About Page
 
 
@@ -331,7 +385,7 @@ tabsAboutPage model =
                         , pane =
                             Tab.pane paneCustom
                                 [ h2 [] [ text "Programming Languages" ]
-                                , p [] [ languagesSection model.page ]
+                                , p [] [ languagesSection model ]
                                 ]
                         }
                     , Tab.item
@@ -393,12 +447,14 @@ on Category Theory, Abstract Algebra and Algorithms. More in **Interests**!
         ]
 
 
-languagesSection page =
+languagesSection model =
     let
+        page = model.page
+               
         selectedLang =
             case page of
-                About aboutState ->
-                    aboutState.languageSelection
+                About ->
+                    model.aboutState.languageSelection
 
                 _ ->
                     "Haskell"
@@ -613,7 +669,7 @@ rules of construction:
 
 - Variables: Strings or characters representing some parameter of a value
 - Abstraction: A function definition, with the syntax (λ x → M). M is another expression, and x is bound in M.
-- Application: Applying functions to arguments, e.g. (M N) reads "M is applied to N".
+- Application: Applying functions to arguments, e.g. (M N) is "M is applied to N".
 
 ### Identities
 
@@ -629,3 +685,14 @@ the identity function written with the lambda calculus!
 I like to think that this website displays my identity, hence my use for this function :)
 
 """
+
+interests : Html msg
+interests =
+    iframe
+    [ style "display" "inline"
+    , Style.minWidth "100%"
+    , Style.minHeight "200vh"
+    , src "assets/content/Interests.html"
+    ]
+    [ ]
+    

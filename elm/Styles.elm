@@ -94,3 +94,8 @@ outline =
     style "outline"
 
 toMD = Markdown.toHtml [ class "content" ]
+
+externalLink : String -> String -> Html msg
+externalLink url label =
+    a [ href url, target "_blank" ]
+        [ text label ]
