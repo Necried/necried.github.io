@@ -1,2 +1,5 @@
 elm.json
 elm-stuff
+*.org
+*.~
+assets/org

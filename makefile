@@ -26,19 +26,12 @@ index.js: $(shell find src -type f | grep elm)
 
 launch:
 	open http://localhost:8000/index.html
-	cd build && elm reactor &
-
-sa:
-	killall elm || true
-	open http://localhost:8000/src/${n}/Static/Standalone/${m}.elm && elm reactor
-	#elm make src/Static/Standalone/${m}.elm --output=build/Standalone${m}.html
-	#open build/Standalone${m}.html
 
 stop:
 	killall elm
 
 # clean all generated files
-clean:
+clean: elmclean
 	rm index.js
 	rm $(ORG_ODIR)/*.md
 
