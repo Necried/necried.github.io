@@ -1,0 +1,9 @@
+elm.json
+elm-stuff
+*.org
+*.~
+assets/org
+TAGS
+Process
+*.hi
+*.o
