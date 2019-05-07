@@ -1,7 +1,12 @@
 module Styles exposing (..)
 
 import Bootstrap.Grid as Grid
+import Bootstrap.Grid.Row as Row
+import Bootstrap.Grid.Col as Col
+import Bootstrap.Text as Text
 import Bootstrap.Utilities.Spacing as Spacing
+
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Markdown exposing (..)
@@ -99,3 +104,86 @@ externalLink : String -> String -> Html msg
 externalLink url label =
     a [ href url, target "_blank" ]
         [ text label ]
+
+type HeroHeight = Half | Full
+
+heroHeader : HeroHeight -> Html msg -> Html msg
+heroHeader heroHeight content =
+    let
+        minHeightVal =
+            case heroHeight of
+                Full -> "95.5vh"
+                Half -> "50vh"
+                        
+        myBackground =
+            [ backgroundImage "url(\"background.jpg\")"
+            , backgroundColor "darkBlue"
+            , backgroundPosition "center"
+            , backgroundSize "cover"
+            , minWidth "100%"
+            , minHeight minHeightVal
+            , marginTop "3.55%"
+            ]
+
+        textStyle =
+            [ color lightGrey
+            , fontSize "30px"
+            , fontStyle "bold"
+            , myFonts
+            ]
+
+    in
+        Grid.row
+            [ Row.bottomXs, Row.attrs myBackground ]
+            [ Grid.col [ Col.middleXs, Col.textAlign Text.alignXsCenter, Col.attrs textStyle ]
+                  [ span [] [ content ] ]
+            ]    
+
+pageNotFoundView : Html msg
+pageNotFoundView =
+    let
+        myBackground =
+            [ backgroundPosition "center"
+            , backgroundSize "cover"
+            , minWidth "100%"
+            , minHeight "50%"
+            , marginTop "3.55%"
+            ]
+            
+        textStyle fsize =
+            [ fontSize fsize
+            , fontStyle "bold"
+            , color dimGrey
+            , myFonts
+            ]
+    in
+    Grid.row [ Row.bottomXs, Row.attrs myBackground ]
+        [ Grid.col [ Col.middleXs, Col.textAlign Text.alignXsCenter ]
+                  [ h1 (textStyle "100px") [ text "404 Not Found"]
+                  , p  (textStyle "20px") [ text "Either the link is bad, or the page is under construction." ]
+                  ]
+        ]
+        
+pageLoading : Html msg
+pageLoading =
+    let
+        myBackground =
+            [ backgroundPosition "center"
+            , backgroundSize "cover"
+            , minWidth "100%"
+            , minHeight "50%"
+            , marginTop "3.55%"
+            ]
+            
+        textStyle fsize =
+            [ fontSize fsize
+            , fontStyle "bold"
+            , color dimGrey
+            , myFonts
+            ]
+    in
+    Grid.row [ Row.bottomXs, Row.attrs myBackground ]
+        [ Grid.col [ Col.middleXs, Col.textAlign Text.alignXsCenter ]
+                  [ h1 (textStyle "100px") [ text "Loading page..."]
+                  ]
+        ]

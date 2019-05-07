@@ -19,7 +19,7 @@ urlTranslation : Page -> String
 urlTranslation page =
     case page of
         Interests ->
-            ""
+            "https://raw.githubusercontent.com/Necried/necried.github.io/elm-rewrite/assets/content/Interests.md"
 
         _ ->
             ""

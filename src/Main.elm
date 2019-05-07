@@ -21,6 +21,7 @@ import Bootstrap.Utilities.Size as Size
 import Bootstrap.Utilities.Spacing as Spacing
 import Browser exposing (..)
 import Browser.Navigation as Nav
+import Browser.Dom
 import Debug exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -29,6 +30,7 @@ import Http exposing (..)
 import List exposing (map)
 import Markdown exposing (..)
 import Url as Url
+import Task
 
 import Styles as Style exposing (..)
 import Styles exposing (externalLink)
@@ -85,8 +87,9 @@ type Msg
     | CarouselMsg Carousel.Msg
     | TabMsg Tab.State
     | LanguageSwitch String
-    | GotContent Page (Maybe String)
-
+    | GotContent Page (Result Http.Error String)
+    | NoOp
+      
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
@@ -128,7 +131,10 @@ update msg model =
         UrlChanged url ->
             urlUpdate url model
 
-        GotContent page mContent ->
+        GotContent page resContent ->
+            let
+                mContent = Result.toMaybe resContent
+            in
             case mContent of
                 Nothing ->
                     ( { model | page = NotFound }, Cmd.none )
@@ -165,19 +171,29 @@ update msg model =
                     , Cmd.none
                     )
 
+        NoOp ->
+            ( model, Cmd.none )
+
 urlUpdate : Url.Url -> Model -> ( Model, Cmd Msg )
 urlUpdate url model =
+    let
+        setViewportCmd =
+            Task.perform (always NoOp) (Browser.Dom.setViewport 0 0)
+    in
     case Routes.decode url of
         Nothing ->
-            ( { model | page = NotFound }, Cmd.none )
+            ( { model | page = NotFound }, setViewportCmd )
 
         Just page ->
             case page of
                 Interests ->
-                    ( model, Cmd.none )
+                    ( { model | page = Interests }, Cmd.batch [setViewportCmd, getRequest Interests GotContent]  )
 
-                p ->
-                    ( { model | page = p }, Cmd.none )
+                About ->
+                    ( { model | page = About }, setViewportCmd )
+
+                _ ->
+                    ( { model | page = NotFound }, setViewportCmd )
 
 view : Model -> Document Msg
 view model =
@@ -188,13 +204,29 @@ view model =
         title =
             pageTitle True <| model.page
 
+        loadOrContent =
+            case model.externalContent of
+                Nothing ->
+                    pageLoading
+                Just c ->
+                    let
+                        mdOpt = Markdown.defaultOptions
+                    in
+                        div []
+                            [ heroHeader Half <| h1 [] [ text "Interests" ]
+                            , Grid.container []
+                                [ Markdown.toHtmlWith { mdOpt | sanitize = False } [ Spacing.mt4 ] c] ]
+                
         content =
             case model.page of
                 Interests ->
-                    interests
+                    loadOrContent
+
+                About ->
+                    aboutView model
 
                 _ ->
-                    aboutView model
+                    pageNotFoundView
 
         layout =
             Grid.containerFluid [] [ content, largeBlank ]
@@ -269,23 +301,35 @@ viewFooter =
                           , span [ Spacing.mr1 ] []
                           , Style.externalLink "https://www.linkedin.com/in/lucas-matthew-dutton-50061b133/" "LinkedIn"
                           ]
-                    , li []
+                    {-, li []
                           [ Style.fontAwesome "hackerrank"
                           , span [ Spacing.mr1 ] []
                           , Style.externalLink "https://www.hackerrank.com/luke97" "HackerRank"
                           ]
+                    -}
                     ]
-            
+
+        mcpLinks =
+            ul [ class "bd-footer-links" ]
+                [ li []
+                      [ Style.fontAwesome "link"
+                      , span [ Spacing.mr1 ] []
+                      , Style.externalLink "https://mcp-team.com/" "McMaster Competitive Programming"
+                      ]
+                ]
     in
     footer [ class "bd-footer", backgroundColor lightGrey ]
-        [ Grid.containerFluid [  ]
+        [ Grid.containerFluid [ ]
               [ Grid.row []
-                    [ Grid.col [ Col.offsetMd2, Col.attrs [fontSize "18px"] ] [ text "Connect with me" ] ]
-              , Grid.row []
-                    [ Grid.col [ Col.offsetMd2 ] [ links ]
+                    [ Grid.col [ Col.offsetMd1, Col.attrs [fontSize "2.25em"] ] [ text "Connect with me" ]
+                    , Grid.col [ Col.attrs [fontSize "2em"] ] [ text "Other Enquiries" ]
                     ]
               , Grid.row []
-                    [ Grid.col [ Col.offsetMd2 ] [ text "Developed with Elm 0.19 and elm-bootstrap" ]
+                    [ Grid.col [ Col.offsetMd1 ] [ links ]
+                    , Grid.col [] [mcpLinks]
+                    ]
+              , Grid.row []
+                    [ Grid.col [ Col.offsetMd1 ] [ text "Developed with Elm 0.19 and elm-bootstrap" ]
                     ]
               ]
         ]
@@ -322,23 +366,13 @@ carouselAboutPage model =
                     text msg
                 )
 
-        myBackground =
-            [ Style.backgroundImage "url(\"background.jpg\")"
-            , Style.backgroundColor "darkBlue"
-            , Style.backgroundPosition "center"
-            , Style.backgroundSize "cover"
-            , Style.minWidth "100%"
-            , Style.minHeight "95.5vh"
-            , Style.marginTop "3.55%"
-            ]
-
         carouselView =
             Grid.container []
                 [ Grid.row []
                     [ Grid.col [ Col.attrs [ fontFamily "monospace", fontSize "2em" ] ]
                         [ text "λ x → x" ]
                     ]
-                , Grid.row [ Row.attrs [ Style.marginTop "1%" ] ]
+                , Grid.row [ Row.attrs [ Spacing.mt1 ] ]
                     [ Grid.col []
                         [ Carousel.config CarouselMsg []
                             |> Carousel.slides
@@ -361,18 +395,8 @@ carouselAboutPage model =
                     ]
                 ]
 
-        textStyle =
-            [ color lightGrey
-            , fontSize "30px"
-            , fontStyle "bold"
-            , myFonts
-            ]
     in
-    Grid.row
-        [ Row.bottomXs, Row.attrs myBackground ]
-        [ Grid.col [ Col.middleXs, Col.textAlign Text.alignXsCenter, Col.attrs textStyle ]
-            [ span [] [ carouselView ] ]
-        ]
+    Style.heroHeader Full carouselView
 
 
 tabsAboutPage model =
@@ -613,8 +637,9 @@ Mainly used when I was developing games with Unity.
     in
     Grid.containerFluid [ Spacing.mt4 ]
         [ Grid.row []
-            [ Grid.col [ Col.md3 ] [ ListGroup.custom languagesList ]
-            , Grid.col [ Col.xs8 ] [ selectedBlurb ]
+            [ Grid.col [ Col.sm3, Col.attrs [Spacing.mb2] ] [ ListGroup.custom languagesList ]
+            , Grid.col [ Col.sm8 ]
+                [ h4 [] [ text selectedLang], selectedBlurb ]
             ]
         ]
 
@@ -703,14 +728,3 @@ the identity function written with the lambda calculus!
 I like to think that this website displays my identity, hence my use for this function :)
 
 """
-
-interests : Html msg
-interests =
-    iframe
-    [ style "display" "inline"
-    , Style.minWidth "100%"
-    , Style.minHeight "200vh"
-    , src "assets/content/Interests.html"
-    ]
-    [ ]
-    

@@ -22,7 +22,7 @@ routeParser : Parser (Page -> a) a
 routeParser =
     UrlParser.oneOf
         [ UrlParser.map Home top
-        , UrlParser.map About (s "About")
+        , UrlParser.map About (UrlParser.oneOf [s "About", s "Lucas%20Dutton", s "index.html"] )
         , UrlParser.map Interests (s "Interests")
         , UrlParser.map ReadMenu (s "Reads")
         , UrlParser.map ReadPage (s "Reads" </> string)
