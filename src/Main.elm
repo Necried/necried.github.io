@@ -60,6 +60,7 @@ type alias Model =
     , tabState : Tab.State
     , aboutState : AboutState
     , externalContent : Maybe String
+    , externalTitle : Maybe String
     }
 
 
@@ -77,6 +78,7 @@ init _ url key =
             , tabState = Tab.initialState
             , aboutState = { languageSelection = "Haskell" }
             , externalContent = Nothing
+            , externalTitle = Nothing
             }
     in
     ( initModel, navbarCmd )
@@ -90,6 +92,7 @@ type Msg
     | TabMsg Tab.State
     | LanguageSwitch String
     | GotContent Page (Result Http.Error String)
+    | PushTitle String
     | NoOp
       
 subscriptions : Model -> Sub Msg
@@ -140,10 +143,15 @@ update msg model =
             case mContent of
                 Nothing ->
                     ( { model | page = NotFound }, Cmd.none )
+                        
                 Just content ->
                     case page of
                         Interests ->
                             ( { model | externalContent = Just content }, Cmd.none )
+
+                        ReadPage title ->
+                            ( { model | externalContent = Just content }, Cmd.none )
+                                
                         _ ->
                             ( model, Cmd.none )
                 
@@ -173,6 +181,11 @@ update msg model =
                     , Cmd.none
                     )
 
+        PushTitle title ->
+            ( { model | externalTitle = Just title }
+            , Cmd.none
+            )
+                    
         NoOp ->
             ( model, Cmd.none )
 
@@ -191,10 +204,18 @@ urlUpdate url model =
                 then ( model, Cmd.none )
             else case page of
                 Interests ->
-                    ( { model | page = Interests }, Cmd.batch [setViewportCmd, getRequest Interests GotContent]  )
+                    ( { model | page = Interests, externalTitle = Just "Interests" }
+                    , Cmd.batch [setViewportCmd, getRequest Interests GotContent]
+                    )
 
                 About ->
                     ( { model | page = About }, setViewportCmd )
+
+                ReadMenu ->
+                    ( { model | page = ReadMenu }, setViewportCmd )
+
+                ReadPage title ->
+                    ( { model | page = ReadPage title }, Cmd.batch [setViewportCmd, getRequest (ReadPage title) GotContent]  )
 
                 _ ->
                     ( { model | page = NotFound }, setViewportCmd )
@@ -217,7 +238,7 @@ view model =
                         mdOpt = Markdown.defaultOptions
                     in
                         div []
-                            [ heroHeader Half <| h1 [] [ text "Interests" ]
+                            [ heroHeader Half <| h1 [] [ text <| Maybe.withDefault "" model.externalTitle ]
                             , Grid.container []
                                 [ Markdown.toHtmlWith { mdOpt | sanitize = False } [ Spacing.mt4 ] c] ]
                 
@@ -232,8 +253,12 @@ view model =
                 ReadMenu ->
                     div []
                         [ heroHeader Half <| h1 [] [ text "List of Posts" ]
-                        , Grid.container [] <| renderCards <| chunksOf3 reads
+                        , Grid.container [] <| renderCards PushTitle <| chunksOf3 reads
                         ]
+
+                ReadPage t ->
+                    loadOrContent
+                    
                 _ ->
                     pageNotFoundView
 

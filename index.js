@@ -5539,6 +5539,7 @@ var author$project$Main$init = F3(
 			aboutState: {languageSelection: 'Haskell'},
 			carouselState: rundis$elm_bootstrap$Bootstrap$Carousel$initialState,
 			externalContent: elm$core$Maybe$Nothing,
+			externalTitle: elm$core$Maybe$Nothing,
 			key: key,
 			navbarState: navbarState,
 			page: author$project$Routes$About,
@@ -6520,15 +6521,23 @@ var author$project$Main$GotContent = F2(
 		return {$: 'GotContent', a: a, b: b};
 	});
 var author$project$Main$NoOp = {$: 'NoOp'};
-var author$project$Routes$Interests = {$: 'Interests'};
+var author$project$Routes$Home = {$: 'Home'};
+var author$project$Routes$NotFound = {$: 'NotFound'};
 var author$project$Routes$ReadMenu = {$: 'ReadMenu'};
 var author$project$Requests$contentPages = _List_fromArray(
-	[author$project$Routes$Interests, author$project$Routes$ReadMenu]);
+	[author$project$Routes$Home, author$project$Routes$About, author$project$Routes$ReadMenu, author$project$Routes$NotFound]);
+var elm$core$Debug$log = _Debug_log;
 var author$project$Requests$urlTranslation = function (page) {
-	if (page.$ === 'Interests') {
-		return 'https://raw.githubusercontent.com/Necried/necried.github.io/elm-rewrite/assets/content/Interests.md';
-	} else {
-		return '';
+	switch (page.$) {
+		case 'Interests':
+			return 'https://raw.githubusercontent.com/Necried/necried.github.io/elm-rewrite/assets/content/Interests.md';
+		case 'ReadPage':
+			var title = page.a;
+			return _Utils_ap(
+				A2(elm$core$Debug$log, 'ok', 'https://raw.githubusercontent.com/Necried/necried.github.io/elm-rewrite/assets/content/'),
+				title);
+		default:
+			return '';
 	}
 };
 var elm$core$List$member = F2(
@@ -7171,15 +7180,14 @@ var elm$http$Http$get = function (r) {
 };
 var author$project$Requests$getRequest = F2(
 	function (page, _for) {
-		return (!A2(elm$core$List$member, page, author$project$Requests$contentPages)) ? elm$core$Platform$Cmd$none : elm$http$Http$get(
+		return A2(elm$core$List$member, page, author$project$Requests$contentPages) ? elm$core$Platform$Cmd$none : elm$http$Http$get(
 			{
 				expect: elm$http$Http$expectString(
 					_for(page)),
 				url: author$project$Requests$urlTranslation(page)
 			});
 	});
-var author$project$Routes$NotFound = {$: 'NotFound'};
-var author$project$Routes$Home = {$: 'Home'};
+var author$project$Routes$Interests = {$: 'Interests'};
 var author$project$Routes$ReadPage = function (a) {
 	return {$: 'ReadPage', a: a};
 };
@@ -7276,18 +7284,6 @@ var elm$url$Url$Parser$s = function (str) {
 			}
 		});
 };
-var elm$url$Url$Parser$slash = F2(
-	function (_n0, _n1) {
-		var parseBefore = _n0.a;
-		var parseAfter = _n1.a;
-		return elm$url$Url$Parser$Parser(
-			function (state) {
-				return A2(
-					elm$core$List$concatMap,
-					parseAfter,
-					parseBefore(state));
-			});
-	});
 var elm$url$Url$Parser$custom = F2(
 	function (tipe, stringToSomething) {
 		return elm$url$Url$Parser$Parser(
@@ -7349,13 +7345,7 @@ var author$project$Routes$routeParser = elm$url$Url$Parser$oneOf(
 			elm$url$Url$Parser$map,
 			author$project$Routes$ReadMenu,
 			elm$url$Url$Parser$s('Reads')),
-			A2(
-			elm$url$Url$Parser$map,
-			author$project$Routes$ReadPage,
-			A2(
-				elm$url$Url$Parser$slash,
-				elm$url$Url$Parser$s('Reads'),
-				elm$url$Url$Parser$string))
+			A2(elm$url$Url$Parser$map, author$project$Routes$ReadPage, elm$url$Url$Parser$string)
 		]));
 var elm$url$Url$Parser$getFirstMatch = function (states) {
 	getFirstMatch:
@@ -7503,7 +7493,10 @@ var author$project$Main$urlUpdate = F2(
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{page: author$project$Routes$Interests}),
+								{
+									externalTitle: elm$core$Maybe$Just('Interests'),
+									page: author$project$Routes$Interests
+								}),
 							elm$core$Platform$Cmd$batch(
 								_List_fromArray(
 									[
@@ -7516,6 +7509,29 @@ var author$project$Main$urlUpdate = F2(
 								model,
 								{page: author$project$Routes$About}),
 							setViewportCmd);
+					case 'ReadMenu':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{page: author$project$Routes$ReadMenu}),
+							setViewportCmd);
+					case 'ReadPage':
+						var title = page.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									page: author$project$Routes$ReadPage(title)
+								}),
+							elm$core$Platform$Cmd$batch(
+								_List_fromArray(
+									[
+										setViewportCmd,
+										A2(
+										author$project$Requests$getRequest,
+										author$project$Routes$ReadPage(title),
+										author$project$Main$GotContent)
+									])));
 					default:
 						return _Utils_Tuple2(
 							_Utils_update(
@@ -7747,16 +7763,26 @@ var author$project$Main$update = F2(
 						elm$core$Platform$Cmd$none);
 				} else {
 					var content = mContent.a;
-					if (page.$ === 'Interests') {
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									externalContent: elm$core$Maybe$Just(content)
-								}),
-							elm$core$Platform$Cmd$none);
-					} else {
-						return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+					switch (page.$) {
+						case 'Interests':
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										externalContent: elm$core$Maybe$Just(content)
+									}),
+								elm$core$Platform$Cmd$none);
+						case 'ReadPage':
+							var title = page.a;
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										externalContent: elm$core$Maybe$Just(content)
+									}),
+								elm$core$Platform$Cmd$none);
+						default:
+							return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 					}
 				}
 			case 'CarouselMsg':
@@ -7790,10 +7816,22 @@ var author$project$Main$update = F2(
 				} else {
 					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 				}
+			case 'PushTitle':
+				var title = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							externalTitle: elm$core$Maybe$Just(title)
+						}),
+					elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 		}
 	});
+var author$project$Main$PushTitle = function (a) {
+	return {$: 'PushTitle', a: a};
+};
 var author$project$Styles$Full = {$: 'Full'};
 var elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var elm$html$Html$Attributes$style = elm$virtual_dom$VirtualDom$style;
@@ -11749,9 +11787,19 @@ var author$project$Main$viewFooter = function () {
 }();
 var author$project$Reads$reads = _List_fromArray(
 	[
-		{date: '1st March, 2019', imgsrc: 'https://images.freeimages.com/images/small-previews/535/natural-wonders-1400924.jpg', title: 'List of Very Incomplete, Need-to-read Resources', url: '/Reads/List-of-Very-Incomplete,-Need-to-read-Resources'}
+		{date: '1st March, 2019', imgsrc: 'https://images.freeimages.com/images/small-previews/0cf/tulips-1-1377350.jpg', title: 'List of Very Incomplete,Need-to-read Resources', url: '/resources.md'}
 	]);
 var elm$html$Html$h3 = _VirtualDom_node('h3');
+var rundis$elm_bootstrap$Bootstrap$Button$linkButton = F2(
+	function (options, children) {
+		return A2(
+			elm$html$Html$a,
+			A2(
+				elm$core$List$cons,
+				A2(elm$html$Html$Attributes$attribute, 'role', 'button'),
+				rundis$elm_bootstrap$Bootstrap$Internal$Button$buttonAttributes(options)),
+			children);
+	});
 var rundis$elm_bootstrap$Bootstrap$Card$Config = function (a) {
 	return {$: 'Config', a: a};
 };
@@ -12076,98 +12124,109 @@ var rundis$elm_bootstrap$Bootstrap$Card$Block$text = F2(
 				children));
 	});
 var rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$mt2 = elm$html$Html$Attributes$class('mt-2');
-var author$project$Reads$renderCard = function (e) {
-	return rundis$elm_bootstrap$Bootstrap$Card$view(
-		A3(
-			rundis$elm_bootstrap$Bootstrap$Card$block,
-			_List_Nil,
-			_List_fromArray(
-				[
-					A2(
-					rundis$elm_bootstrap$Bootstrap$Card$Block$text,
-					_List_Nil,
+var author$project$Reads$renderCard = F2(
+	function (e, fmsg) {
+		return rundis$elm_bootstrap$Bootstrap$Card$view(
+			A3(
+				rundis$elm_bootstrap$Bootstrap$Card$block,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						rundis$elm_bootstrap$Bootstrap$Card$Block$text,
+						_List_Nil,
+						_List_fromArray(
+							[
+								elm$html$Html$text('Created at: ' + e.date)
+							])),
+						rundis$elm_bootstrap$Bootstrap$Card$Block$custom(
+						A2(
+							rundis$elm_bootstrap$Bootstrap$Button$linkButton,
+							_List_fromArray(
+								[
+									rundis$elm_bootstrap$Bootstrap$Button$dark,
+									rundis$elm_bootstrap$Bootstrap$Button$attrs(
+									_List_fromArray(
+										[
+											elm$html$Html$Attributes$href(e.url)
+										])),
+									rundis$elm_bootstrap$Bootstrap$Button$onClick(
+									fmsg(e.title))
+								]),
+							_List_fromArray(
+								[
+									elm$html$Html$text('Read')
+								])))
+					]),
+				A3(
+					rundis$elm_bootstrap$Bootstrap$Card$header,
 					_List_fromArray(
 						[
-							elm$html$Html$text('Created at: ' + e.date)
-						])),
-					rundis$elm_bootstrap$Bootstrap$Card$Block$custom(
-					A2(
-						rundis$elm_bootstrap$Bootstrap$Button$button,
-						_List_fromArray(
-							[rundis$elm_bootstrap$Bootstrap$Button$dark]),
-						_List_fromArray(
-							[
-								elm$html$Html$text('Read')
-							])))
-				]),
-			A3(
-				rundis$elm_bootstrap$Bootstrap$Card$header,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$class('text-center')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						elm$html$Html$img,
-						_List_fromArray(
-							[
-								elm$html$Html$Attributes$src(e.imgsrc)
-							]),
-						_List_Nil),
-						A2(
-						elm$html$Html$h3,
-						_List_fromArray(
-							[rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$mt2]),
-						_List_fromArray(
-							[
-								elm$html$Html$text(e.title)
-							]))
-					]),
-				rundis$elm_bootstrap$Bootstrap$Card$config(_List_Nil))));
-};
+							elm$html$Html$Attributes$class('text-center')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							elm$html$Html$img,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$src(e.imgsrc)
+								]),
+							_List_Nil),
+							A2(
+							elm$html$Html$h3,
+							_List_fromArray(
+								[rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$mt2]),
+							_List_fromArray(
+								[
+									elm$html$Html$text(e.title)
+								]))
+						]),
+					rundis$elm_bootstrap$Bootstrap$Card$config(_List_Nil))));
+	});
 var rundis$elm_bootstrap$Bootstrap$Grid$Internal$Col5 = {$: 'Col5'};
 var rundis$elm_bootstrap$Bootstrap$Grid$Col$md5 = A2(rundis$elm_bootstrap$Bootstrap$Grid$Internal$width, rundis$elm_bootstrap$Bootstrap$General$Internal$MD, rundis$elm_bootstrap$Bootstrap$Grid$Internal$Col5);
 var rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$mt3 = elm$html$Html$Attributes$class('mt-3');
-var author$project$Reads$renderCards = function (entries) {
-	var renderCols = function (inp) {
-		if (!inp.b) {
+var author$project$Reads$renderCards = F2(
+	function (fmsg, entries) {
+		var renderCols = function (inp) {
+			if (!inp.b) {
+				return _List_Nil;
+			} else {
+				var x = inp.a;
+				var rest = inp.b;
+				return A2(
+					elm$core$List$cons,
+					A2(
+						rundis$elm_bootstrap$Bootstrap$Grid$col,
+						_List_fromArray(
+							[rundis$elm_bootstrap$Bootstrap$Grid$Col$md5]),
+						_List_fromArray(
+							[
+								A2(author$project$Reads$renderCard, x, fmsg)
+							])),
+					renderCols(rest));
+			}
+		};
+		if (!entries.b) {
 			return _List_Nil;
 		} else {
-			var x = inp.a;
-			var rest = inp.b;
+			var xs = entries.a;
+			var xxs = entries.b;
 			return A2(
 				elm$core$List$cons,
 				A2(
-					rundis$elm_bootstrap$Bootstrap$Grid$col,
-					_List_fromArray(
-						[rundis$elm_bootstrap$Bootstrap$Grid$Col$md5]),
+					rundis$elm_bootstrap$Bootstrap$Grid$row,
 					_List_fromArray(
 						[
-							author$project$Reads$renderCard(x)
-						])),
-				renderCols(rest));
+							rundis$elm_bootstrap$Bootstrap$Grid$Row$attrs(
+							_List_fromArray(
+								[rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$mt3]))
+						]),
+					renderCols(xs)),
+				A2(author$project$Reads$renderCards, fmsg, xxs));
 		}
-	};
-	if (!entries.b) {
-		return _List_Nil;
-	} else {
-		var xs = entries.a;
-		var xxs = entries.b;
-		return A2(
-			elm$core$List$cons,
-			A2(
-				rundis$elm_bootstrap$Bootstrap$Grid$row,
-				_List_fromArray(
-					[
-						rundis$elm_bootstrap$Bootstrap$Grid$Row$attrs(
-						_List_fromArray(
-							[rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$mt3]))
-					]),
-				renderCols(xs)),
-			author$project$Reads$renderCards(xxs));
-	}
-};
+	});
 var author$project$Styles$Half = {$: 'Half'};
 var elm$html$Html$h6 = _VirtualDom_node('h6');
 var rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$my5 = elm$html$Html$Attributes$class('my-5');
@@ -12352,7 +12411,8 @@ var author$project$Main$view = function (model) {
 							_List_Nil,
 							_List_fromArray(
 								[
-									elm$html$Html$text('Interests')
+									elm$html$Html$text(
+									A2(elm$core$Maybe$withDefault, '', model.externalTitle))
 								]))),
 						A2(
 						rundis$elm_bootstrap$Bootstrap$Grid$container,
@@ -12397,9 +12457,14 @@ var author$project$Main$view = function (model) {
 							A2(
 							rundis$elm_bootstrap$Bootstrap$Grid$container,
 							_List_Nil,
-							author$project$Reads$renderCards(
+							A2(
+								author$project$Reads$renderCards,
+								author$project$Main$PushTitle,
 								author$project$Utils$chunksOf3(author$project$Reads$reads)))
 						]));
+			case 'ReadPage':
+				var t = _n0.a;
+				return loadOrContent;
 			default:
 				return author$project$Styles$pageNotFoundView;
 		}

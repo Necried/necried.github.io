@@ -25,7 +25,7 @@ routeParser =
         , UrlParser.map About (UrlParser.oneOf [s "About", s "Lucas%20Dutton", s "index.html"] )
         , UrlParser.map Interests (s "Interests")
         , UrlParser.map ReadMenu (s "Reads")
-        , UrlParser.map ReadPage (s "Reads" </> string)
+        , UrlParser.map ReadPage (string)
         ]
 
 decode : Url -> Maybe Page
@@ -48,7 +48,7 @@ encode route =
             "/Reads"
 
         ReadPage title ->
-            "/Reads/" ++ title
+            "/" ++ title
 
         NotFound ->
             "/Notfound"        

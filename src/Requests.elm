@@ -3,11 +3,11 @@ module Requests exposing (..)
 import Http
 import Routes exposing (..)
 
-contentPages = [ Interests, ReadMenu ]
+contentPages = [ Home, About, ReadMenu, NotFound ]
 
 getRequest : Page -> (Page -> Result Http.Error String -> msg) -> Cmd msg
 getRequest page for =
-    if not <| List.member page contentPages
+    if List.member page contentPages
         then Cmd.none
     else
         Http.get
@@ -21,5 +21,8 @@ urlTranslation page =
         Interests ->
             "https://raw.githubusercontent.com/Necried/necried.github.io/elm-rewrite/assets/content/Interests.md"
 
+        ReadPage title ->
+            Debug.log "ok" "https://raw.githubusercontent.com/Necried/necried.github.io/elm-rewrite/assets/content/" ++ title
+                
         _ ->
             ""

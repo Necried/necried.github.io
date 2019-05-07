@@ -33,14 +33,14 @@ readOrgFile fname = do
             putStrLn $ show err
             return $ Entry "" "" "" ""
         Right res ->
-            genEntry res
+            genEntry res fname
 
-genEntry (ttl, dt) = do
+genEntry (ttl, dt) fname = do
     i <- getStdRandom $ randomR (0, length images - 1)
     return $ Entry
         { title = ttl
         , date = dt
-        , url = urlFromTitle ttl
+        , url = urlFromName fname
         , imgsrc = images !! i
         }
     
@@ -71,8 +71,10 @@ parseOrgHeader =
     in do
         (,) <$> p "TITLE" <*> t "DATE"
 
-urlFromTitle :: String -> String
-urlFromTitle s = "/Reads/" ++ map (\c -> if c == ' ' then '-' else c) s
+urlFromName :: String -> String
+urlFromName s = '/' : map (\c -> if c == ' ' then '-' else c) strippedLink
+  where
+    strippedLink = flip (++) ".md" $ reverse $ drop 4 $ takeWhile (not . (==) '/') $ reverse s
         
 images =
     [ "https://images.freeimages.com/images/small-previews/ffa/water-lilly-1368676.jpg"
