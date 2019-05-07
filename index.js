@@ -7495,30 +7495,34 @@ var author$project$Main$urlUpdate = F2(
 				setViewportCmd);
 		} else {
 			var page = _n0.a;
-			switch (page.$) {
-				case 'Interests':
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{page: author$project$Routes$Interests}),
-						elm$core$Platform$Cmd$batch(
-							_List_fromArray(
-								[
-									setViewportCmd,
-									A2(author$project$Requests$getRequest, author$project$Routes$Interests, author$project$Main$GotContent)
-								])));
-				case 'About':
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{page: author$project$Routes$About}),
-						setViewportCmd);
-				default:
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{page: author$project$Routes$NotFound}),
-						setViewportCmd);
+			if (_Utils_eq(page, model.page)) {
+				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+			} else {
+				switch (page.$) {
+					case 'Interests':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{page: author$project$Routes$Interests}),
+							elm$core$Platform$Cmd$batch(
+								_List_fromArray(
+									[
+										setViewportCmd,
+										A2(author$project$Requests$getRequest, author$project$Routes$Interests, author$project$Main$GotContent)
+									])));
+					case 'About':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{page: author$project$Routes$About}),
+							setViewportCmd);
+					default:
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{page: author$project$Routes$NotFound}),
+							setViewportCmd);
+				}
 			}
 		}
 	});
@@ -11743,6 +11747,427 @@ var author$project$Main$viewFooter = function () {
 					]))
 			]));
 }();
+var author$project$Reads$reads = _List_fromArray(
+	[
+		{date: '1st March, 2019', imgsrc: 'https://images.freeimages.com/images/small-previews/535/natural-wonders-1400924.jpg', title: 'List of Very Incomplete, Need-to-read Resources', url: '/Reads/List-of-Very-Incomplete,-Need-to-read-Resources'}
+	]);
+var elm$html$Html$h3 = _VirtualDom_node('h3');
+var rundis$elm_bootstrap$Bootstrap$Card$Config = function (a) {
+	return {$: 'Config', a: a};
+};
+var rundis$elm_bootstrap$Bootstrap$Card$Internal$CardBlock = function (a) {
+	return {$: 'CardBlock', a: a};
+};
+var rundis$elm_bootstrap$Bootstrap$Card$Internal$applyBlockModifier = F2(
+	function (option, options) {
+		switch (option.$) {
+			case 'AlignedBlock':
+				var align = option.a;
+				return _Utils_update(
+					options,
+					{
+						aligned: elm$core$Maybe$Just(align)
+					});
+			case 'BlockColoring':
+				var role = option.a;
+				return _Utils_update(
+					options,
+					{
+						coloring: elm$core$Maybe$Just(role)
+					});
+			case 'BlockTextColoring':
+				var color = option.a;
+				return _Utils_update(
+					options,
+					{
+						textColoring: elm$core$Maybe$Just(color)
+					});
+			default:
+				var attrs = option.a;
+				return _Utils_update(
+					options,
+					{
+						attributes: _Utils_ap(options.attributes, attrs)
+					});
+		}
+	});
+var rundis$elm_bootstrap$Bootstrap$Card$Internal$defaultBlockOptions = {aligned: elm$core$Maybe$Nothing, attributes: _List_Nil, coloring: elm$core$Maybe$Nothing, textColoring: elm$core$Maybe$Nothing};
+var rundis$elm_bootstrap$Bootstrap$Internal$Text$textColorClass = function (color) {
+	if (color.$ === 'White') {
+		return elm$html$Html$Attributes$class('text-white');
+	} else {
+		var role = color.a;
+		return A2(rundis$elm_bootstrap$Bootstrap$Internal$Role$toClass, 'text', role);
+	}
+};
+var rundis$elm_bootstrap$Bootstrap$Card$Internal$blockAttributes = function (modifiers) {
+	var options = A3(elm$core$List$foldl, rundis$elm_bootstrap$Bootstrap$Card$Internal$applyBlockModifier, rundis$elm_bootstrap$Bootstrap$Card$Internal$defaultBlockOptions, modifiers);
+	return _Utils_ap(
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('card-body')
+			]),
+		_Utils_ap(
+			function () {
+				var _n0 = options.aligned;
+				if (_n0.$ === 'Just') {
+					var align = _n0.a;
+					return _List_fromArray(
+						[
+							rundis$elm_bootstrap$Bootstrap$Internal$Text$textAlignClass(align)
+						]);
+				} else {
+					return _List_Nil;
+				}
+			}(),
+			_Utils_ap(
+				function () {
+					var _n1 = options.coloring;
+					if (_n1.$ === 'Just') {
+						var role = _n1.a;
+						return _List_fromArray(
+							[
+								A2(rundis$elm_bootstrap$Bootstrap$Internal$Role$toClass, 'bg', role)
+							]);
+					} else {
+						return _List_Nil;
+					}
+				}(),
+				_Utils_ap(
+					function () {
+						var _n2 = options.textColoring;
+						if (_n2.$ === 'Just') {
+							var color = _n2.a;
+							return _List_fromArray(
+								[
+									rundis$elm_bootstrap$Bootstrap$Internal$Text$textColorClass(color)
+								]);
+						} else {
+							return _List_Nil;
+						}
+					}(),
+					options.attributes))));
+};
+var rundis$elm_bootstrap$Bootstrap$Card$Internal$block = F2(
+	function (options, items) {
+		return rundis$elm_bootstrap$Bootstrap$Card$Internal$CardBlock(
+			A2(
+				elm$html$Html$div,
+				rundis$elm_bootstrap$Bootstrap$Card$Internal$blockAttributes(options),
+				A2(
+					elm$core$List$map,
+					function (_n0) {
+						var e = _n0.a;
+						return e;
+					},
+					items)));
+	});
+var rundis$elm_bootstrap$Bootstrap$Card$block = F3(
+	function (options, items, _n0) {
+		var conf = _n0.a;
+		return rundis$elm_bootstrap$Bootstrap$Card$Config(
+			_Utils_update(
+				conf,
+				{
+					blocks: _Utils_ap(
+						conf.blocks,
+						_List_fromArray(
+							[
+								A2(rundis$elm_bootstrap$Bootstrap$Card$Internal$block, options, items)
+							]))
+				}));
+	});
+var rundis$elm_bootstrap$Bootstrap$Card$config = function (options) {
+	return rundis$elm_bootstrap$Bootstrap$Card$Config(
+		{blocks: _List_Nil, footer: elm$core$Maybe$Nothing, header: elm$core$Maybe$Nothing, imgBottom: elm$core$Maybe$Nothing, imgTop: elm$core$Maybe$Nothing, options: options});
+};
+var rundis$elm_bootstrap$Bootstrap$Card$Header = function (a) {
+	return {$: 'Header', a: a};
+};
+var rundis$elm_bootstrap$Bootstrap$Card$headerPrivate = F4(
+	function (elemFn, attributes, children, _n0) {
+		var conf = _n0.a;
+		return rundis$elm_bootstrap$Bootstrap$Card$Config(
+			_Utils_update(
+				conf,
+				{
+					header: elm$core$Maybe$Just(
+						rundis$elm_bootstrap$Bootstrap$Card$Header(
+							A2(
+								elemFn,
+								A2(
+									elm$core$List$cons,
+									elm$html$Html$Attributes$class('card-header'),
+									attributes),
+								children)))
+				}));
+	});
+var rundis$elm_bootstrap$Bootstrap$Card$header = rundis$elm_bootstrap$Bootstrap$Card$headerPrivate(elm$html$Html$div);
+var rundis$elm_bootstrap$Bootstrap$Card$Internal$applyModifier = F2(
+	function (option, options) {
+		switch (option.$) {
+			case 'Aligned':
+				var align = option.a;
+				return _Utils_update(
+					options,
+					{
+						aligned: elm$core$Maybe$Just(align)
+					});
+			case 'Coloring':
+				var coloring = option.a;
+				return _Utils_update(
+					options,
+					{
+						coloring: elm$core$Maybe$Just(coloring)
+					});
+			case 'TextColoring':
+				var coloring = option.a;
+				return _Utils_update(
+					options,
+					{
+						textColoring: elm$core$Maybe$Just(coloring)
+					});
+			default:
+				var attrs = option.a;
+				return _Utils_update(
+					options,
+					{
+						attributes: _Utils_ap(options.attributes, attrs)
+					});
+		}
+	});
+var rundis$elm_bootstrap$Bootstrap$Card$Internal$defaultOptions = {aligned: elm$core$Maybe$Nothing, attributes: _List_Nil, coloring: elm$core$Maybe$Nothing, textColoring: elm$core$Maybe$Nothing};
+var rundis$elm_bootstrap$Bootstrap$Card$Internal$cardAttributes = function (modifiers) {
+	var options = A3(elm$core$List$foldl, rundis$elm_bootstrap$Bootstrap$Card$Internal$applyModifier, rundis$elm_bootstrap$Bootstrap$Card$Internal$defaultOptions, modifiers);
+	return _Utils_ap(
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('card')
+			]),
+		_Utils_ap(
+			function () {
+				var _n0 = options.coloring;
+				if (_n0.$ === 'Just') {
+					if (_n0.a.$ === 'Roled') {
+						var role = _n0.a.a;
+						return _List_fromArray(
+							[
+								A2(rundis$elm_bootstrap$Bootstrap$Internal$Role$toClass, 'bg', role)
+							]);
+					} else {
+						var role = _n0.a.a;
+						return _List_fromArray(
+							[
+								A2(rundis$elm_bootstrap$Bootstrap$Internal$Role$toClass, 'border', role)
+							]);
+					}
+				} else {
+					return _List_Nil;
+				}
+			}(),
+			_Utils_ap(
+				function () {
+					var _n1 = options.textColoring;
+					if (_n1.$ === 'Just') {
+						var color = _n1.a;
+						return _List_fromArray(
+							[
+								rundis$elm_bootstrap$Bootstrap$Internal$Text$textColorClass(color)
+							]);
+					} else {
+						return _List_Nil;
+					}
+				}(),
+				_Utils_ap(
+					function () {
+						var _n2 = options.aligned;
+						if (_n2.$ === 'Just') {
+							var align = _n2.a;
+							return _List_fromArray(
+								[
+									rundis$elm_bootstrap$Bootstrap$Internal$Text$textAlignClass(align)
+								]);
+						} else {
+							return _List_Nil;
+						}
+					}(),
+					options.attributes))));
+};
+var rundis$elm_bootstrap$Bootstrap$Card$Internal$renderBlocks = function (blocks) {
+	return A2(
+		elm$core$List$map,
+		function (block_) {
+			if (block_.$ === 'CardBlock') {
+				var e = block_.a;
+				return e;
+			} else {
+				var e = block_.a;
+				return e;
+			}
+		},
+		blocks);
+};
+var rundis$elm_bootstrap$Bootstrap$Card$view = function (_n0) {
+	var conf = _n0.a;
+	return A2(
+		elm$html$Html$div,
+		rundis$elm_bootstrap$Bootstrap$Card$Internal$cardAttributes(conf.options),
+		_Utils_ap(
+			A2(
+				elm$core$List$filterMap,
+				elm$core$Basics$identity,
+				_List_fromArray(
+					[
+						A2(
+						elm$core$Maybe$map,
+						function (_n1) {
+							var e = _n1.a;
+							return e;
+						},
+						conf.header),
+						A2(
+						elm$core$Maybe$map,
+						function (_n2) {
+							var e = _n2.a;
+							return e;
+						},
+						conf.imgTop)
+					])),
+			_Utils_ap(
+				rundis$elm_bootstrap$Bootstrap$Card$Internal$renderBlocks(conf.blocks),
+				A2(
+					elm$core$List$filterMap,
+					elm$core$Basics$identity,
+					_List_fromArray(
+						[
+							A2(
+							elm$core$Maybe$map,
+							function (_n3) {
+								var e = _n3.a;
+								return e;
+							},
+							conf.footer),
+							A2(
+							elm$core$Maybe$map,
+							function (_n4) {
+								var e = _n4.a;
+								return e;
+							},
+							conf.imgBottom)
+						])))));
+};
+var rundis$elm_bootstrap$Bootstrap$Card$Internal$BlockItem = function (a) {
+	return {$: 'BlockItem', a: a};
+};
+var rundis$elm_bootstrap$Bootstrap$Card$Block$custom = function (element) {
+	return rundis$elm_bootstrap$Bootstrap$Card$Internal$BlockItem(element);
+};
+var rundis$elm_bootstrap$Bootstrap$Card$Block$text = F2(
+	function (attributes, children) {
+		return rundis$elm_bootstrap$Bootstrap$Card$Internal$BlockItem(
+			A2(
+				elm$html$Html$p,
+				_Utils_ap(
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('card-text')
+						]),
+					attributes),
+				children));
+	});
+var rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$mt2 = elm$html$Html$Attributes$class('mt-2');
+var author$project$Reads$renderCard = function (e) {
+	return rundis$elm_bootstrap$Bootstrap$Card$view(
+		A3(
+			rundis$elm_bootstrap$Bootstrap$Card$block,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					rundis$elm_bootstrap$Bootstrap$Card$Block$text,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text('Created at: ' + e.date)
+						])),
+					rundis$elm_bootstrap$Bootstrap$Card$Block$custom(
+					A2(
+						rundis$elm_bootstrap$Bootstrap$Button$button,
+						_List_fromArray(
+							[rundis$elm_bootstrap$Bootstrap$Button$dark]),
+						_List_fromArray(
+							[
+								elm$html$Html$text('Read')
+							])))
+				]),
+			A3(
+				rundis$elm_bootstrap$Bootstrap$Card$header,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('text-center')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						elm$html$Html$img,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$src(e.imgsrc)
+							]),
+						_List_Nil),
+						A2(
+						elm$html$Html$h3,
+						_List_fromArray(
+							[rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$mt2]),
+						_List_fromArray(
+							[
+								elm$html$Html$text(e.title)
+							]))
+					]),
+				rundis$elm_bootstrap$Bootstrap$Card$config(_List_Nil))));
+};
+var rundis$elm_bootstrap$Bootstrap$Grid$Internal$Col5 = {$: 'Col5'};
+var rundis$elm_bootstrap$Bootstrap$Grid$Col$md5 = A2(rundis$elm_bootstrap$Bootstrap$Grid$Internal$width, rundis$elm_bootstrap$Bootstrap$General$Internal$MD, rundis$elm_bootstrap$Bootstrap$Grid$Internal$Col5);
+var rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$mt3 = elm$html$Html$Attributes$class('mt-3');
+var author$project$Reads$renderCards = function (entries) {
+	var renderCols = function (inp) {
+		if (!inp.b) {
+			return _List_Nil;
+		} else {
+			var x = inp.a;
+			var rest = inp.b;
+			return A2(
+				elm$core$List$cons,
+				A2(
+					rundis$elm_bootstrap$Bootstrap$Grid$col,
+					_List_fromArray(
+						[rundis$elm_bootstrap$Bootstrap$Grid$Col$md5]),
+					_List_fromArray(
+						[
+							author$project$Reads$renderCard(x)
+						])),
+				renderCols(rest));
+		}
+	};
+	if (!entries.b) {
+		return _List_Nil;
+	} else {
+		var xs = entries.a;
+		var xxs = entries.b;
+		return A2(
+			elm$core$List$cons,
+			A2(
+				rundis$elm_bootstrap$Bootstrap$Grid$row,
+				_List_fromArray(
+					[
+						rundis$elm_bootstrap$Bootstrap$Grid$Row$attrs(
+						_List_fromArray(
+							[rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$mt3]))
+					]),
+				renderCols(xs)),
+			author$project$Reads$renderCards(xxs));
+	}
+};
 var author$project$Styles$Half = {$: 'Half'};
 var elm$html$Html$h6 = _VirtualDom_node('h6');
 var rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$my5 = elm$html$Html$Attributes$class('my-5');
@@ -11866,6 +12291,29 @@ var author$project$Styles$pageNotFoundView = function () {
 					]))
 			]));
 }();
+var author$project$Utils$chunksOf3 = function (xs) {
+	if (!xs.b) {
+		return _List_Nil;
+	} else {
+		if (xs.b.b && xs.b.b.b) {
+			var x = xs.a;
+			var _n1 = xs.b;
+			var y = _n1.a;
+			var _n2 = _n1.b;
+			var z = _n2.a;
+			var rest = _n2.b;
+			return A2(
+				elm$core$List$cons,
+				_List_fromArray(
+					[x, y, z]),
+				author$project$Utils$chunksOf3(rest));
+		} else {
+			var rest = xs;
+			return _List_fromArray(
+				[rest]);
+		}
+	}
+};
 var elm$virtual_dom$VirtualDom$node = function (tag) {
 	return _VirtualDom_node(
 		_VirtualDom_noScript(tag));
@@ -11930,6 +12378,28 @@ var author$project$Main$view = function (model) {
 				return loadOrContent;
 			case 'About':
 				return author$project$Main$aboutView(model);
+			case 'ReadMenu':
+				return A2(
+					elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A2(
+							author$project$Styles$heroHeader,
+							author$project$Styles$Half,
+							A2(
+								elm$html$Html$h1,
+								_List_Nil,
+								_List_fromArray(
+									[
+										elm$html$Html$text('List of Posts')
+									]))),
+							A2(
+							rundis$elm_bootstrap$Bootstrap$Grid$container,
+							_List_Nil,
+							author$project$Reads$renderCards(
+								author$project$Utils$chunksOf3(author$project$Reads$reads)))
+						]));
 			default:
 				return author$project$Styles$pageNotFoundView;
 		}

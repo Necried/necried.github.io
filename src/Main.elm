@@ -36,6 +36,8 @@ import Styles as Style exposing (..)
 import Styles exposing (externalLink)
 import Routes exposing (..)
 import Requests exposing (..)
+import Reads exposing (..)
+import Utils exposing (..)
 
 import Debug exposing (..)
 
@@ -227,6 +229,11 @@ view model =
                 About ->
                     aboutView model
 
+                ReadMenu ->
+                    div []
+                        [ heroHeader Half <| h1 [] [ text "List of Posts" ]
+                        , Grid.container [] <| renderCards <| chunksOf3 reads
+                        ]
                 _ ->
                     pageNotFoundView
 

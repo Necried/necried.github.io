@@ -10,14 +10,17 @@ import Text.Parsec.Char
 import Text.Parsec
 import Text.Parsec.String (Parser(..))
 
+assetsDir = "assets/content/"
+orgDir = "assets/org/"
+
 main = do
-    files <- getDirectoryContents "../content"
-    let removedIntrs = filter (not . (==) "Interests.md") files
+    putStrLn "Starting Haskell process..."
+    files <- getDirectoryContents orgDir
+    let removedIntrs = map ((++) orgDir) $ filter (\x -> not $ any ((==) x) ["Interests.org", ".", ".."]) files
         len = length removedIntrs
     entries <- mapM (liftM show . readOrgFile) $ removedIntrs
-    print entries
-    appendFile "../../src/Reads.elm" $ "\nreads = " ++ show entries
-    return ()
+    withFile "src/Reads.elm" AppendMode $ \h -> do
+        hPutStr h $ "\nreads = [" ++ concat entries ++ "]"
 
 readOrgFile :: FilePath -> IO Entry
 readOrgFile fname = do
@@ -26,8 +29,8 @@ readOrgFile fname = do
     d <- hGetLine handle
     let pRes = parse parseOrgHeader "" $ unlines [t, d]
     case pRes of
-        Left _ -> do
-            putStrLn "Parse Error!"
+        Left err -> do
+            putStrLn $ show err
             return $ Entry "" "" "" ""
         Right res ->
             genEntry res
@@ -51,21 +54,25 @@ data Entry = Entry
 
 instance Show Entry where
     show e =
-        "{ title = " ++ title e ++
-        ", date = " ++ date e ++
-        ", url = " ++ url e ++
-        ", imgsrc = " ++ imgsrc e ++
+        let
+            withQuotes f = show . f
+        in
+        "{ title = " ++ withQuotes title e ++
+        ", date = " ++ withQuotes date e ++
+        ", url = " ++ withQuotes url e ++
+        ", imgsrc = " ++ withQuotes imgsrc e ++
         " }"
 
 parseOrgHeader :: Parser (String, String)
 parseOrgHeader =
     let
         p h = string ("# " ++ h ++ ": ") *> (many $ noneOf "\n")
+        t h = string ("\n# " ++ h ++ ": ") *> (many $ noneOf "\n")
     in do
-        (,) <$> p "TITLE" <*> p "DATE"
+        (,) <$> p "TITLE" <*> t "DATE"
 
 urlFromTitle :: String -> String
-urlFromTitle s = "/Reads/" ++ s
+urlFromTitle s = "/Reads/" ++ map (\c -> if c == ' ' then '-' else c) s
         
 images =
     [ "https://images.freeimages.com/images/small-previews/ffa/water-lilly-1368676.jpg"

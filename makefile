@@ -4,14 +4,17 @@ ORGFILES=$(patsubst $(ORG_INDIR)/%.org,$(ORG_ODIR)/%.md,$(wildcard $(ORG_INDIR)/
 
 .PHONY: clean all
 
-all: setup org index.js launch
+all: setup org hask index.js launch
 
 setup: ~/TODO/resources.org
 	cp ~/TODO/resources.org $(ORG_INDIR)
 	cp assets/templates/Reads.elm src
-	ghc -o assets/templates/Process assets/templates/Process.hs
 
 org: $(ORG_ODIR) $(ORGFILES)
+
+hask:
+	ghc -o assets/templates/Process assets/templates/Process.hs
+	./assets/templates/Process
 
 $(ORG_ODIR):
 	mkdir -v -p $(ORG_ODIR)
@@ -35,7 +38,6 @@ stop:
 # clean all generated files
 clean: elmclean
 	rm index.js
-	rm $(ORG_ODIR)/*.md
 	(cd assets/templates; rm Process *.o *.hi)
 
 # clean the elm-stuff directory	

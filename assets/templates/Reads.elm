@@ -1,6 +1,7 @@
 module Reads exposing (..)
 
 import Bootstrap.Button as Button
+import Bootstrap.Card.Block as Block
 import Bootstrap.Card as Card
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
@@ -28,7 +29,7 @@ renderCard e =
            , h3 [ Spacing.mt2 ] [ text e.title ]
            ]
         |> Card.block []
-           [ Block.text [ text "Created at: " ++ e.date ]
+           [ Block.text [] [ text <| "Created at: " ++ e.date ]
            , Block.custom <| Button.button [ Button.dark ] [ text "Read" ]
            ]
         |> Card.view
