@@ -25,6 +25,7 @@ import Debug exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Http exposing (..)
 import List exposing (map)
 import Markdown exposing (..)
 import Url as Url
@@ -32,6 +33,9 @@ import Url as Url
 import Styles as Style exposing (..)
 import Styles exposing (externalLink)
 import Routes exposing (..)
+import Requests exposing (..)
+
+import Debug exposing (..)
 
 type alias ReadContent =
     { title : String
@@ -51,6 +55,7 @@ type alias Model =
     , carouselState : Carousel.State
     , tabState : Tab.State
     , aboutState : AboutState
+    , externalContent : Maybe String
     }
 
 
@@ -67,6 +72,7 @@ init _ url key =
             , carouselState = Carousel.initialState
             , tabState = Tab.initialState
             , aboutState = { languageSelection = "Haskell" }
+            , externalContent = Nothing
             }
     in
     ( initModel, navbarCmd )
@@ -74,13 +80,12 @@ init _ url key =
 
 type Msg
     = NavbarMsg Navbar.State
-    | PageSwitch Page
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | CarouselMsg Carousel.Msg
     | TabMsg Tab.State
     | LanguageSwitch String
-
+    | GotContent Page (Maybe String)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -108,9 +113,6 @@ update msg model =
         NavbarMsg state ->
             ( { model | navbarState = state }, Cmd.none )
 
-        PageSwitch page ->
-            ( { model | page = page }, Cmd.none )
-
         LinkClicked urlRequest ->
             case urlRequest of
                 Internal url ->
@@ -126,6 +128,17 @@ update msg model =
         UrlChanged url ->
             urlUpdate url model
 
+        GotContent page mContent ->
+            case mContent of
+                Nothing ->
+                    ( { model | page = NotFound }, Cmd.none )
+                Just content ->
+                    case page of
+                        Interests ->
+                            ( { model | externalContent = Just content }, Cmd.none )
+                        _ ->
+                            ( model, Cmd.none )
+                
         CarouselMsg subMsg ->
             ( { model | carouselState = Carousel.update subMsg model.carouselState }
             , Cmd.none
@@ -159,7 +172,12 @@ urlUpdate url model =
             ( { model | page = NotFound }, Cmd.none )
 
         Just page ->
-            ( { model | page = page }, Cmd.none )
+            case page of
+                Interests ->
+                    ( model, Cmd.none )
+
+                p ->
+                    ( { model | page = p }, Cmd.none )
 
 view : Model -> Document Msg
 view model =
@@ -234,7 +252,7 @@ pageTitle isTitle page =
             ""
 
         NotFound ->
-            "404 Not Found"
+            "404 Not Found"        
                 
 viewFooter : Html Msg
 viewFooter =

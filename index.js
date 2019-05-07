@@ -4482,6 +4482,7 @@ var author$project$Main$NavbarMsg = function (a) {
 	return {$: 'NavbarMsg', a: a};
 };
 var author$project$Routes$About = {$: 'About'};
+var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
 var elm$core$Array$foldr = F3(
 	function (func, baseCase, _n0) {
@@ -4611,7 +4612,6 @@ var elm$core$Basics$identity = function (x) {
 };
 var elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
 var elm$core$Dict$empty = elm$core$Dict$RBEmpty_elm_builtin;
-var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var rundis$elm_bootstrap$Bootstrap$Navbar$Hidden = {$: 'Hidden'};
 var rundis$elm_bootstrap$Bootstrap$Navbar$State = function (a) {
 	return {$: 'State', a: a};
@@ -5363,6 +5363,7 @@ var author$project$Main$init = F3(
 		var initModel = {
 			aboutState: {languageSelection: 'Haskell'},
 			carouselState: rundis$elm_bootstrap$Bootstrap$Carousel$initialState,
+			externalContent: elm$core$Maybe$Nothing,
 			key: key,
 			navbarState: navbarState,
 			page: author$project$Routes$About,
@@ -7018,11 +7019,16 @@ var author$project$Main$urlUpdate = F2(
 				elm$core$Platform$Cmd$none);
 		} else {
 			var page = _n0.a;
-			return _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{page: page}),
-				elm$core$Platform$Cmd$none);
+			if (page.$ === 'Interests') {
+				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+			} else {
+				var p = page;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{page: p}),
+					elm$core$Platform$Cmd$none);
+			}
 		}
 	});
 var elm$browser$Browser$Navigation$load = _Browser_load;
@@ -7207,13 +7213,6 @@ var author$project$Main$update = F2(
 						model,
 						{navbarState: state}),
 					elm$core$Platform$Cmd$none);
-			case 'PageSwitch':
-				var page = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{page: page}),
-					elm$core$Platform$Cmd$none);
 			case 'LinkClicked':
 				var urlRequest = msg.a;
 				if (urlRequest.$ === 'Internal') {
@@ -7233,6 +7232,29 @@ var author$project$Main$update = F2(
 			case 'UrlChanged':
 				var url = msg.a;
 				return A2(author$project$Main$urlUpdate, url, model);
+			case 'GotContent':
+				var page = msg.a;
+				var mContent = msg.b;
+				if (mContent.$ === 'Nothing') {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{page: author$project$Routes$NotFound}),
+						elm$core$Platform$Cmd$none);
+				} else {
+					var content = mContent.a;
+					if (page.$ === 'Interests') {
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									externalContent: elm$core$Maybe$Just(content)
+								}),
+							elm$core$Platform$Cmd$none);
+					} else {
+						return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+					}
+				}
 			case 'CarouselMsg':
 				var subMsg = msg.a;
 				return _Utils_Tuple2(
@@ -7252,8 +7274,8 @@ var author$project$Main$update = F2(
 			default:
 				var lang = msg.a;
 				var curPage = model.page;
-				var _n2 = model.page;
-				if (_n2.$ === 'About') {
+				var _n4 = model.page;
+				if (_n4.$ === 'About') {
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
