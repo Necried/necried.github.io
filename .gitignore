@@ -3,3 +3,5 @@ elm-stuff
 *.org
 *.~
 assets/org
+TAGS
+assets/templates

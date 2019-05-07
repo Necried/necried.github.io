@@ -185,7 +185,9 @@ urlUpdate url model =
             ( { model | page = NotFound }, setViewportCmd )
 
         Just page ->
-            case page of
+            if page == model.page
+                then ( model, Cmd.none )
+            else case page of
                 Interests ->
                     ( { model | page = Interests }, Cmd.batch [setViewportCmd, getRequest Interests GotContent]  )
 
