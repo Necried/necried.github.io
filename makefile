@@ -2,9 +2,12 @@ ORG_ODIR=assets/content
 ORG_INDIR=assets/org
 ORGFILES=$(patsubst $(ORG_INDIR)/%.org,$(ORG_ODIR)/%.md,$(wildcard $(ORG_INDIR)/*.org))
 
+js="index.js"
+min="index.min.js"
+
 .PHONY: clean all
 
-all: setup org hask index.js launch
+all: setup org hask index.js
 
 setup: ~/TODO/resources.org
 	cp ~/TODO/resources.org $(ORG_INDIR)
@@ -26,8 +29,21 @@ $(ORG_ODIR)/%.md: $(ORG_INDIR)/%.md
 	install -v -m 644 $< $(ORG_ODIR)
 	rm $<
 
-index.js: $(shell find src -type f | grep elm)  
-	elm make src/Main.elm --output=index.js
+index.js: $(shell find src -type f | grep elm)
+	set -e
+
+	js=$(js)
+	min=$(min)
+	elm make --optimize src/Main.elm --output=$(js)
+	uglifyjs $(js) --compress "pure_funcs=[F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9],pure_getters,keep_fargs=false,unsafe_comps,unsafe" | uglifyjs --mangle --output=$(min)
+
+	echo "Initial size: $(cat $js | wc -c) bytes  ($js)"
+	echo "Minified size:$(cat $min | wc -c) bytes  ($min)"
+	echo "Gzipped size: $(cat $min | gzip -c | wc -c) bytes"
+
+	rm $(js)
+	mv $(min) $(js)
+
 
 launch:
 	open http://localhost:8000/index.html

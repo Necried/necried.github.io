@@ -22,7 +22,7 @@ urlTranslation page =
             "https://raw.githubusercontent.com/Necried/necried.github.io/elm-rewrite/assets/content/Interests.md"
 
         ReadPage title ->
-            Debug.log "ok" "https://raw.githubusercontent.com/Necried/necried.github.io/elm-rewrite/assets/content/" ++ title
+            "https://raw.githubusercontent.com/Necried/necried.github.io/elm-rewrite/assets/content/" ++ title
                 
         _ ->
             ""
