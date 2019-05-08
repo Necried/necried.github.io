@@ -18,15 +18,17 @@ main = do
     files <- getDirectoryContents orgDir
     let removedIntrs = map ((++) orgDir) $ filter (\x -> not $ any ((==) x) ["Interests.org", ".", ".."]) files
         len = length removedIntrs
-    entries <- mapM (liftM show . readOrgFile) $ removedIntrs
+    entries <- mapM (liftM show . readOrgFile) removedIntrs
     withFile "src/Reads.elm" AppendMode $ \h -> do
         hPutStr h $ "\nreads = [" ++ concat entries ++ "]"
+        hClose h
 
 readOrgFile :: FilePath -> IO Entry
 readOrgFile fname = do
     handle <- openFile fname ReadMode
     t <- hGetLine handle
     d <- hGetLine handle
+    hClose handle
     let pRes = parse parseOrgHeader "" $ unlines [t, d]
     case pRes of
         Left err -> do
