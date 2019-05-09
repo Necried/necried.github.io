@@ -32,7 +32,7 @@ readOrgFile fname = do
     let pRes = parse parseOrgHeader "" $ unlines [t, d]
     case pRes of
         Left err -> do
-            putStrLn $ show err
+            error $ show err
             return $ Entry "" "" "" ""
         Right res ->
             genEntry res fname
