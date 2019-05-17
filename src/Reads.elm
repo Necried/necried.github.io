@@ -51,4 +51,4 @@ renderCards fmsg entries =
             Grid.row [ Row.attrs [Spacing.mt3] ] (renderCols xs) :: renderCards fmsg xxs
                 
 
-reads = [{ title = "List of Very Incomplete,Need-to-read Resources", date = "1st March, 2019", url = "/resources.md", imgsrc = "https://images.freeimages.com/images/small-previews/0cf/tulips-1-1377350.jpg" }]
+reads = [{ title = "List of Very Incomplete,Need-to-read Resources", date = "1st March, 2019", url = "/resources.md", imgsrc = "https://images.freeimages.com/images/small-previews/535/natural-wonders-1400924.jpg" }]

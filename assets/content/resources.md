@@ -27,6 +27,7 @@
 <li><a href="#sec-2-11">2.11. <span class="todo IN_PROGRESS">IN-PROGRESS</span> What I Wished I Knew When Learning Haskell&#xa0;&#xa0;&#xa0;<span class="tag"><span class="_metatutorial">@metatutorial</span></span></a></li>
 <li><a href="#sec-2-12">2.12. <span class="todo TODO">TODO</span> Intro to Parsec</a></li>
 <li><a href="#sec-2-13">2.13. <span class="todo TODO">TODO</span> Real World Haskell</a></li>
+<li><a href="#sec-2-14">2.14. <span class="todo TODO">TODO</span> Purely Functional Data Structures by Chris Okasaki</a></li>
 </ul>
 </li>
 <li><a href="#sec-3">3. Agda</a>
@@ -133,6 +134,8 @@ blogs, etc. I do not claim to know the veracity of some of these links!
 ## TODO [Intro to Parsec](https://jakewheat.github.io/intro_to_parsing/)<a id="sec-2-12" name="sec-2-12"></a>
 
 ## TODO [Real World Haskell](http://book.realworldhaskell.org/read/index.html)<a id="sec-2-13" name="sec-2-13"></a>
+
+## TODO [Purely Functional Data Structures by Chris Okasaki](https://www.amazon.com/Purely-Functional-Data-Structures-Okasaki/dp/0521663504)<a id="sec-2-14" name="sec-2-14"></a>
 
 # Agda<a id="sec-3" name="sec-3"></a>
 
