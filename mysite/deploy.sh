@@ -13,7 +13,7 @@ git fetch --all
 git checkout -b hakyll-experiments --track origin/hakyll-experiments
 
 # Overwrite existing files with new files
-cp -a _site/. .
+cp -a _site/. ..
 
 # Commit
 echo ">>>>>> Publishing"
