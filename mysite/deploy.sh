@@ -16,13 +16,16 @@ git checkout -b hakyll-experiments --track origin/hakyll-experiments
 cp -a _site/. .
 
 # Commit
+echo ">>>>>> Publishing"
 git add -A
 git commit -m "Publish."
 
 # Push
+echo ">>>>>> Pushing"
 git push origin hakyll-experiments:hakyll-experiments
 
 # Restoration
+echo ">>>>>> Restoration"
 git checkout hakyll-develop
 git branch -D hakyll-experiments
 git stash pop
