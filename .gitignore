@@ -7,3 +7,4 @@ TAGS
 Process
 *.hi
 *.o
+.stack-work
