@@ -10,7 +10,7 @@ stack exec mysite build
 
 # Get previous files
 git fetch --all
-git checkout -b hakyll-experiments --track origin/hakyll-experiments
+git checkout -b master --track origin/master
 
 # Overwrite existing files with new files
 cp -a _site/. ..
@@ -22,10 +22,10 @@ git commit -m "Publish."
 
 # Push
 echo ">>>>>> Pushing"
-git push origin hakyll-experiments:hakyll-experiments
+git push origin master:master
 
 # Restoration
 echo ">>>>>> Restoration"
 git checkout hakyll-develop
-git branch -D hakyll-experiments
+git branch -D master
 git stash pop
