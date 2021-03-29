@@ -8,3 +8,6 @@ Process
 *.hi
 *.o
 .stack-work
+_cache/
+_site/
+.stack-work/
