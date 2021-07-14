@@ -7,8 +7,10 @@
 git checkout master
 
 # Build new files
+cd mysite
 stack exec mysite clean
 stack exec mysite build
+cd ..
 
 # Commit
 git add -A
