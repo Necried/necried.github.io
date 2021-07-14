@@ -7,8 +7,8 @@
 git checkout master
 
 # Build new files
-stack exec myblog clean
-stack exec myblog build
+stack exec mysite clean
+stack exec mysite build
 
 # Commit
 git add -A
