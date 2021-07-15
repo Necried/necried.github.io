@@ -2,8 +2,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 import           Data.Monoid (mappend)
 import           Hakyll
-
-
+-- import           Text.Pandoc
+import           Text.Pandoc.Definition
 --------------------------------------------------------------------------------
 config :: Configuration
 config = defaultConfiguration
@@ -16,13 +16,13 @@ main = hakyllWith config $ do
         route   idRoute
         compile copyFileCompiler
 
-    match "css/*" $ do
+    match "mybulma/css/*" $ do
         route   idRoute
         compile compressCssCompiler
 
-    match (fromList ["projects.md", "contact.markdown"]) $ do
+    match (fromList ["projects.md"]) $ do
         route   $ setExtension "html"
-        compile $ pandocCompiler
+        compile $ pandocCompilerWithTransform defaultHakyllReaderOptions defaultHakyllWriterOptions pandocMap
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
             >>= relativizeUrls
 
@@ -71,3 +71,16 @@ postCtx =
     dateField "date" "%B %e, %Y" `mappend`
     defaultContext
 
+-- Add bulma sections and title styles to Pandoc-generated markdown
+pandocMap :: Pandoc -> Pandoc
+pandocMap (Pandoc meta block) = Pandoc meta (addHeaderClass block)
+  where
+    addHeaderClass :: [Block] -> [Block]
+    addHeaderClass (Header i (ident, cls, kvMap) inline : Para txt : rest) =
+      Div sectionized [Header i (ident, cls, h1Class : kvMap) inline, Para txt] : addHeaderClass rest
+    addHeaderClass [] = []
+    addHeaderClass (x : xs) = x : addHeaderClass xs
+    
+    h1Class = ("class", "title is-3")
+    sectionized = ("", ["section"], [("class","section")])
+    
