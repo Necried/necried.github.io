@@ -4,35 +4,37 @@
 @import url('https://fonts.googleapis.com/css?family=Nunito:400,700');
 
 // Set your brand colors
-$c1: #272932;
+$c1: #bb85fc;
 $c2: #1c7293;
 $c3: #b9e3c6;
-$c4: #f1f2eb;
+$c4: #121212;
+$white: #ffffff;
 
 // Update Bulma's global variables
 $family-sans-serif: "Nunito", sans-serif;
 $grey-dark: $c1;
 $grey-light: $c2;
-$primary: $c3;
-// $link: $purple;
+$primary: $c1;
+$info: #03dac6;
+$danger: #cf6679;
+$link: #bb85fc;
 
 // Update some of Bulma's component variables
-$background: $c4;
-$footer-background-color: $c4;
+$body-background-color: $c4;
+$footer-background-color: #1f1b24;
 $text-strong: $c1;
-
+$text: $white;
+$scheme-main: #303030;
+$box-padding: 3rem;
 // Modify body to fix footer at bottom of page
 
 
 // Import only what you need from Bulma
 @import "../bulma/sass/utilities/_all.sass";
 @import "../bulma/sass/base/_all.sass";
-@import "../bulma/sass/elements/button.sass";
-@import "../bulma/sass/elements/container.sass";
-@import "../bulma/sass/elements/title.sass";
+@import "../bulma/sass/elements/_all.sass";
 @import "../bulma/sass/form/_all.sass";
 @import "../bulma/sass/components/navbar.sass";
-@import "../bulma/sass/layout/hero.sass";
-@import "../bulma/sass/layout/section.sass";
-@import "../bulma/sass/layout/footer.sass";
-@import "../bulma/sass/components/level.sass"
+@import "../bulma/sass/layout/_all.sass";
+@import "../bulma/sass/components/_all.sass";
+@import "../bulma/sass/grid/_all.sass";
