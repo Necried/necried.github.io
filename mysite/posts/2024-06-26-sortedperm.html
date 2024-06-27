@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-06-26 Wed 17:26 -->
+<!-- 2024-06-26 Wed 21:30 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Defining Unique Sorted Permutations in Dafny</title>
@@ -207,9 +207,9 @@ in the sequence), how do we show that the sequence <code>[0, 1, .. n - 1]</code>
 is the only sequence that satisfy this condition?
 </p>
 
-<div id="outline-container-orgc4c3485" class="outline-2">
-<h2 id="orgc4c3485">Defining Sortedness</h2>
-<div class="outline-text-2" id="text-orgc4c3485">
+<div id="outline-container-orge53a7a8" class="outline-2">
+<h2 id="orge53a7a8">Defining Sortedness</h2>
+<div class="outline-text-2" id="text-orge53a7a8">
 <p>
 First, we can define sorted sequences as a predicate. This simply defines the pairwise
 less-than-or-equal comparison between two elements in the sequence.
@@ -244,9 +244,9 @@ elements.
 </div>
 </div>
 
-<div id="outline-container-org7508178" class="outline-2">
-<h2 id="org7508178">Definitions: Permutations</h2>
-<div class="outline-text-2" id="text-org7508178">
+<div id="outline-container-orga5ebcf0" class="outline-2">
+<h2 id="orga5ebcf0">Definitions: Permutations</h2>
+<div class="outline-text-2" id="text-orga5ebcf0">
 <p>
 A permutation of length <code>n</code> contains elements from <code>0</code> to <code>n - 1</code> (yes, we're starting
 the count from 0). We won't define permutations in Dafny, because we're only
@@ -278,9 +278,9 @@ Note that Dafny uses zero-based indexing!
 </div>
 </div>
 
-<div id="outline-container-orgf44eac9" class="outline-2">
-<h2 id="orgf44eac9">Proof by Contradiction</h2>
-<div class="outline-text-2" id="text-orgf44eac9">
+<div id="outline-container-orgf46ed65" class="outline-2">
+<h2 id="orgf46ed65">Proof by Contradiction</h2>
+<div class="outline-text-2" id="text-orgf46ed65">
 <p>
 We'll make use of a proof by contradiction in the main proof below.
 A template for doing that in Dafny, as suggested
@@ -310,9 +310,9 @@ necessary but it makes it clear that this is a proof by contradiction<sup><a id=
 </div>
 </div>
 
-<div id="outline-container-orgd59f2fa" class="outline-2">
-<h2 id="orgd59f2fa">The proof itself</h2>
-<div class="outline-text-2" id="text-orgd59f2fa">
+<div id="outline-container-org6d1398e" class="outline-2">
+<h2 id="org6d1398e">The proof itself</h2>
+<div class="outline-text-2" id="text-org6d1398e">
 <p>
 Let's begin by outlining a proof sketch. As a reminder, our proof conditions
 are follows:
@@ -347,6 +347,13 @@ For <b>PRE2</b>, we'll define an auxiliary lemma in Dafny:
 <span style="color: #657b83;">}</span>
 </pre>
 </div>
+
+<p>
+This makes use of Dafny's aggregate statement, with the <code>forall</code> quantifier.
+The given <code>ensures</code> clause states that all elements <code>0 ≤ i &lt; n</code> would be
+in the sequence. In the body, we simply assert that the index is mapped
+to itself in the sequence <code>s[i] == i</code>, thus proving the postcondition.
+</p>
 
 <p>
 This may seem obvious, but recall that <code>SortedSeqPerm</code> was defined by
@@ -413,9 +420,9 @@ number in the description above:
 </div>
 </div>
 
-<div id="outline-container-org12788ba" class="outline-2">
-<h2 id="org12788ba">Takeaways</h2>
-<div class="outline-text-2" id="text-org12788ba">
+<div id="outline-container-org5123c92" class="outline-2">
+<h2 id="org5123c92">Takeaways</h2>
+<div class="outline-text-2" id="text-org5123c92">
 <p>
 As with non-trivial proofs in Dafny (and most other proof languages out there),
 we need to make explicit some facts we think should hold trivially, especially

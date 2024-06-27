@@ -37,7 +37,7 @@ main = do
             >>= relativizeUrls
 -}
 
-    match "posts/*" $ do
+    match "posts/*.html" $ do
         route $ setExtension "html"
         compile $ getResourceString
             -- >>= loadAndApplyTemplate "templates/post-template.html"    postCtx
@@ -58,6 +58,7 @@ main = do
                 >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
 
+    match "CNAME" $ return ()
 
     match "index.html" $ do
         route idRoute
@@ -87,7 +88,6 @@ main = do
 --------------------------------------------------------------------------------
 postCtx :: Context String
 postCtx =
-    dateField "date" "%B %e, %Y" `mappend`
     defaultContext
 
 -- Add bulma sections and title styles to Pandoc-generated markdown
