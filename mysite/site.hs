@@ -50,7 +50,7 @@ main = do
             posts <- recentFirst =<< loadAll "posts/*"
             let postCtx =
                     listField "posts" postCtx (return posts) `mappend`
-                    constField "title" "Posts"            `mappend`
+                    -- constField "title" "Posts"            `mappend`
                     defaultContext
 
             makeItem ""
