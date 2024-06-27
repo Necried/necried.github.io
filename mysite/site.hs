@@ -39,7 +39,7 @@ main = do
 
     match "posts/*" $ do
         route $ setExtension "html"
-        compile $ pandocCompiler
+        compile $ getResourceString
             -- >>= loadAndApplyTemplate "templates/post-template.html"    postCtx
             -- >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
