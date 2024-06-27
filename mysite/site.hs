@@ -40,22 +40,22 @@ main = do
     match "posts/*" $ do
         route $ setExtension "html"
         compile $ pandocCompiler
-            >>= loadAndApplyTemplate "templates/post.html"    postCtx
-            >>= loadAndApplyTemplate "templates/default.html" postCtx
+            -- >>= loadAndApplyTemplate "templates/post-template.html"    postCtx
+            -- >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
-    create ["archive.html"] $ do
+    create ["posts.html"] $ do
         route idRoute
         compile $ do
             posts <- recentFirst =<< loadAll "posts/*"
-            let archiveCtx =
+            let postCtx =
                     listField "posts" postCtx (return posts) `mappend`
-                    constField "title" "Archives"            `mappend`
+                    constField "title" "Posts"            `mappend`
                     defaultContext
 
             makeItem ""
-                >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
-                >>= loadAndApplyTemplate "templates/default.html" archiveCtx
+                >>= loadAndApplyTemplate "templates/post.html" postCtx
+                >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
 
 

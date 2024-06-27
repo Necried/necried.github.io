@@ -1,0 +1,186 @@
+<div id="content" class="content">
+<h1 class="title" id="defining-unique-sorted-permutations-in-dafny">Defining Unique Sorted Permutations in Dafny</h1>
+<p>If we know a sequence containing elements from <code>0</code> to <code>(n - 1)</code>
+is sorted in strict order (thus implying no duplicate elements
+in the sequence), how do we show that the sequence <code>[0, 1, .. n - 1]</code>
+is the only sequence that satisfy this condition?</p>
+<div id="outline-container-orgc4c3485" class="outline-2">
+<h2 id="orgc4c3485">Defining Sortedness</h2>
+<div id="text-orgc4c3485" class="outline-text-2">
+<p>First, we can define sorted sequences as a predicate. This simply defines the pairwise
+less-than-or-equal comparison between two elements in the sequence.</p>
+<div class="org-src-container">
+<pre class="src src-dafny"><code>predicate SortedSeq(s: seq&lt;int&gt;)
+{
+  forall i, j :: 0 &lt;= i &lt; j &lt; |s| ==&gt; s[i] &lt;= s[j]
+}</code></pre>
+</div>
+<p>However, this allows duplicate elements in a sequence.
+Instead, we can define a strict order, which tightens the comparison in the predicate:</p>
+<div class="org-src-container">
+<pre class="src src-dafny"><code>predicate StrictOrderSortedSeq(s: seq&lt;int&gt;)
+{
+  forall i, j :: 0 &lt;= i &lt; j &lt; |s| ==&gt; s[i] &lt; s[j]
+}</code></pre>
+</div>
+<p>This is the definition of sortedness we’ll use, as permutations do not contain duplicate
+elements.</p>
+</div>
+</div>
+<div id="outline-container-org7508178" class="outline-2">
+<h2 id="org7508178">Definitions: Permutations</h2>
+<div id="text-org7508178" class="outline-text-2">
+<p>A permutation of length <code>n</code> contains elements from <code>0</code> to <code>n - 1</code> (yes, we’re starting
+the count from 0). We won’t define permutations in Dafny, because we’re only
+concerned with sorted permutations. There really is only one permutation that is sorted,
+and that is by mapping each index to itself in the sequence:</p>
+<div class="org-src-container">
+<pre class="src src-dafny"><code>predicate ValidSortedPerm(s: seq&lt;nat&gt;) {
+  forall i :: 0 &lt;= i &lt; |s| ==&gt; s[i] == i
+}</code></pre>
+</div>
+<p>With that, we can generate the sequence of sorted permutations of length <code>n</code>,
+by using Dafny’s sequence comprehension. The second argument <code>i ⇒ i</code>
+is just the identity function, as we’re mapping the index to itself.
+Note that Dafny uses zero-based indexing!</p>
+<div class="org-src-container">
+<pre class="src src-dafny"><code>function SortedSeqPerm(n: nat): seq&lt;nat&gt;
+  ensures var s := SortedSeqPerm(n);
+          ValidSortedPerm(s) &amp;&amp; StrictOrderSortedSeq(s)
+{
+  seq(n, i =&gt; i)
+}</code></pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf44eac9" class="outline-2">
+<h2 id="orgf44eac9">Proof by Contradiction</h2>
+<div id="text-orgf44eac9" class="outline-text-2">
+<p>We’ll make use of a proof by contradiction in the main proof below.
+A template for doing that in Dafny, as suggested
+<a href="https://github.com/dafny-lang/dafny/issues/95">here</a>, structures the proof around precondition <code>P</code> and postcondition <code>Q</code>:</p>
+<div class="org-src-container">
+<pre class="src src-dafny"><code>lemma L(...)
+  requires P
+  ensures Q
+{
+  if !Q {
+    ...
+    assert !P;
+    assert false;
+  }
+}</code></pre>
+</div>
+<p>Here, we suppose that <code>Q</code> doesn’t hold, and from that we can show that <code>!P</code>,
+essentially contradicting the precondition. The <code>assert false</code> is not
+necessary but it makes it clear that this is a proof by contradiction<sup><a href="#fn.1" id="fnr.1" class="footref" role="doc-backlink">1</a></sup>.</p>
+</div>
+</div>
+<div id="outline-container-orgd59f2fa" class="outline-2">
+<h2 id="orgd59f2fa">The proof itself</h2>
+<div id="text-orgd59f2fa" class="outline-text-2">
+<p>Let’s begin by outlining a proof sketch. As a reminder, our proof conditions
+are follows:</p>
+<ul>
+<li><strong>PRE1</strong>:
+We have a sequence sorted in strict order: <code>StrictOrderSortedSeq(s)</code> holds.</li>
+<li><strong>PRE2</strong>:
+Our sequence has elements from 0 to <code>n - 1</code>.</li>
+<li><strong>PRE3</strong>:
+This also implies the length
+of the sequence is equal to <code>n</code>: <code>|s| == n</code> holds.</li>
+<li><strong>POST1:</strong>
+From the above conditions, we want to deduce that <code>s == [0, 1, .. n - 1]</code>:
+that is, <code>s == SortedSeqPerm(n)</code> holds.</li>
+</ul>
+<p>For <strong>PRE2</strong>, we’ll define an auxiliary lemma in Dafny:</p>
+<div class="org-src-container">
+<pre class="src src-dafny"><code>lemma MembershipOfSortedSeqPerm(n: nat)
+  ensures var s := SortedSeqPerm(n);
+          forall i :: 0 &lt;= i &lt; n ==&gt; i in s
+{
+  var s := SortedSeqPerm(n);
+  forall i | 0 &lt;= i &lt; n
+    ensures i in s
+  {
+    assert s[i] == i;
+  }
+}</code></pre>
+</div>
+<p>This may seem obvious, but recall that <code>SortedSeqPerm</code> was defined by
+sequence comprehension, so Dafny doesn’t attempt to infer the elements of the
+sequence automatically without invoking this lemma.</p>
+<p>Now, our proof proceeds as follows.</p>
+<ol>
+<li>We case-analyze the length of the sequence. If <code>n &lt;= 1</code>, the conclusion
+holds trivially.</li>
+<li>Otherwise, we further perform case-analysis on the last element of the
+sequence, <code>s[n - 1]</code>. We know that if it is equal to <code>n - 1</code>, then
+we know that by induction on the remaining sequence, the conclusion
+holds.</li>
+<li>What if it’s not equal to <code>n - 1</code>? We should be able to derive a
+contradiction. We know from <strong>PRE2</strong> that <code>s[n - 1]</code> must be
+an element from <code>0</code> to <code>n - 2</code>, that is, <code>s[n - 1] ≤ n - 2</code>.
+This follows the proof-by-contradiction template, since
+<code>s[n - 1] != n - 1</code> implies the negation of <strong>POST1</strong></li>
+<li><ul>
+<li>We can still invoke the induction hypothesis on the remaining sequence,
+since the choice of the element in <code>s[n - 1]</code> does not violate
+any conditions on <code>s[..n - 1]</code>.</li>
+<li>From the induction hypothesis, we know <code>n - 2</code> must be in
+<code>s[..n - 1]</code></li>
+</ul></li>
+<li>We derive a contradiction from (4), thus completing our proof.</li>
+</ol>
+<p>The description above is translated into the Dafny code below,
+where a relevant line of code is annotated with the corresponding
+number in the description above:</p>
+<div class="org-src-container">
+<pre class="src src-dafny"><code>lemma StrictOrderingPerm(n: nat, s: seq&lt;nat&gt;)
+  requires StrictOrderSortedSeq(s) // PRE1
+  requires forall i :: 0 &lt;= i &lt; n ==&gt; 0 &lt;= s[i] &lt; n // PRE2
+  requires n == |s| // PRE3
+  ensures s == SortedSeqPerm(n) // POST1
+{
+  if n &lt;= 1 {} // (1)
+  else {
+    if s[n - 1] == n - 1 { // (2)
+      StrictOrderingPerm(n - 1, s[..n - 1]);
+      assert s == SortedSeqPerm(n);
+    } else { // (3)
+      StrictOrderingPerm(n - 1, s[..n - 1]); // (4)
+      // This ensures that s[i] == i in the remaining sequence
+      MembershipOfSortedSeqPerm(n - 1);
+      assert s[n - 1] &lt;= n - 2; // (3)
+      assert n - 2 in s[..n - 1]; // (4)
+      assert !StrictOrderSortedSeq(s); // (5)
+      assert false;
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org12788ba" class="outline-2">
+<h2 id="org12788ba">Takeaways</h2>
+<div id="text-org12788ba" class="outline-text-2">
+<p>As with non-trivial proofs in Dafny (and most other proof languages out there),
+we need to make explicit some facts we think should hold trivially, especially
+for sequences (and other container types in general). Here, I would say that
+precondition <strong>PRE2</strong>, that is <code>∀ i ∙ 0 ≤ i &lt; n ⇒ 0 ≤ s[i] &lt; n</code>, and
+the auxiliary lemma <code>MembershipOfSortedPerm</code> were facts that we could
+take for granted by the definition of a sorted permutation.</p>
+<p>Being able to prove lemmas by contradiction is nice to know :)</p>
+</div>
+</div>
+<h2 class="footnotes" id="footnotes">Footnotes:</h2>
+<div id="text-footnotes">
+<div class="footdef">
+<sup><a href="#fnr.1" id="fn.1" class="footnum" role="doc-backlink">1</a></sup>
+<div class="footpara" role="doc-footnote">
+<p>I would argue that this is more akin to proof by contrapositive, which
+states that a proof of <code>P ⇒ Q</code> can be done by showing <code>!Q ⇒ !P</code>!</p>
+</div>
+</div>
+</div>
+</div>
