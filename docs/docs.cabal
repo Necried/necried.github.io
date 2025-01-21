@@ -1,8 +1,8 @@
-name:                mysite
+name:                docs
 version:             0.1.0.0
 -- synopsis:
 -- description:
-homepage:            https://github.com/Necried/mysite#readme
+homepage:            https://github.com/Necried/docs#readme
 license:             BSD3
 license-file:        LICENSE
 author:              Lucas Dutton
@@ -13,7 +13,7 @@ build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
 
-executable mysite
+executable docs
   main-is:             site.hs
   other-modules:       Projects
   default-language:    Haskell2010
