@@ -1,0 +1,26 @@
+.reveal #sec-title-slide { font-size: 90%; }
+
+.reveal #sec-title-slide h4 { font-size: 50%; }
+
+.title-footer {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    font-size: 30px;
+    color: white;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10%;
+}
+
+.flex-container img {
+    width: 200px; /* Set a width for the images */
+    height: auto; /* Maintain aspect ratio */
+    border: 2px solid #ccc; /* Optional: Add a border to the images */
+    border-radius: 5px; /* Optional: Add rounded corners */
+}

@@ -61,6 +61,10 @@ main = do
     create ["resume.pdf", "CNAME"] $ do
       route idRoute
       compile copyFileCompiler
+
+    match "FunctionalConf2025/*" $ do
+      route idRoute
+      compile copyFileCompiler
       
     match "index.html" $ do
         route idRoute

@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>A Hands-On Introduction to Bidirectional Type Inference with Elm</title>
+<meta name="author" content="(Lucas Dutton, Chris Schankula, Christopher Anand)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.css"/>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/theme/black.css" id="theme"/>
+
+<link rel="stylesheet" href="stylesheet.css"/>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<div style="display: none"> \(
+\newcommand\inp[1]{\textcolor{blue}{#1}}
+\newcommand\outp[1]{\textcolor{orange}{#1}}
+\)</div>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h2>A Hands-On Introduction to Bidirectional Type Inference with Elm</h2><h4>Lucas Dutton, Chris Schankula, Christopher Anand</h4><h3 </h3>
+<div class="title-footer"><p>Functional Conf 2025</p></div>
+<div class='flex-container'>
+<div><img src='Elm_logo.svg'/></div>
+<div><img src='stabl_logo.png'/></div>
+<div><img src='mcmaster_logo.png' style="background-color: white;"/></div>
+</div>
+</section>
+
+
+
+<section>
+<section id="slide-orgf1fc495">
+<h2 id="orgf1fc495">Intro</h2>
+
+<div id="org882754d" class="figure">
+<p><img src="./my_photo.png" alt="my_photo.png" />
+</p>
+</div>
+
+<p>
+Lucas Dutton
+</p>
+
+<p>
+PhD Student, Computer Science
+McMaster University
+</p>
+
+
+</section>
+</section>
+<section>
+<section id="slide-org1775f77">
+<h2 id="org1775f77">Motivation</h2>
+<ul>
+<li>Most modern languages have <b>types</b> attached to <b>values</b></li>
+<li>e.g. <code>Bool</code>, <code>Int</code>, <code>List Int</code></li>
+<li>A <b>typechecker</b> takes <b>type annotations</b> in a program
+and checks that the types are sound</li>
+<li><b>Type inference</b> takes it one step further: don't need type
+annotation to check types!</li>
+
+</ul>
+
+</section>
+<section id="slide-org88c7450">
+<h3 id="org88c7450">Example</h3>
+<p>
+Do the types in this program make sense?
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim><span style="color: #A6E22E;">isPos</span> x <span style="color: #F92672;">=</span> <span style="color: #F92672;">if</span> x <span style="color: #F92672;">&gt;</span> <span style="color: #AE81FF;">0</span> <span style="color: #F92672;">then</span> <span style="color: #66D9EF;">True</span> <span style="color: #F92672;">else</span> <span style="color: #AE81FF;">0</span>
+</code></pre>
+</div>
+
+</section>
+<section id="slide-org868d1fd">
+<h3 id="org868d1fd">Example, cont'd:</h3>
+<pre  class="example">
+The 2nd branch of this `if` does not match all the previous branches:
+
+2| isPos x = if x &gt; 0 then True else 0
+                                     ^
+The 2nd branch is a number of type:
+
+    number
+
+But all the previous branches result in:
+
+    Bool
+</pre>
+
+<p>
+Note that we didn't supply any types to the compiler - type inference at work!
+</p>
+
+</section>
+<section id="slide-org151ef64">
+<h3 id="org151ef64">Why Bidirectional Type Inference?</h3>
+<ul>
+<li>Our Elm example above only uses <i>type inference</i></li>
+<li>Elm uses Hindley-Milner (HM) type inference:
+<ul>
+<li>When a type is not completely known, it creates variables to represent unknown types</li>
+<li>Then it uses <b>unification</b> to solve a series of type equations after
+inferencing is done</li>
+
+</ul></li>
+<li>The HM algorithm is complicated, can lead to worse error messages</li>
+<li>Bidirectional type inference reintroduces type checking to eliminate unification</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgab3de6d">
+<h2 id="orgab3de6d">Roadmap</h2>
+<ul>
+<li>Define a simple language (<b>Syntax</b>)</li>
+<li>Define <b>types</b> for our language</li>
+<li>Define <b>typing judgments</b> on our language</li>
+
+</ul>
+
+</section>
+<section id="slide-org9fbe764">
+<h3 id="org9fbe764">Environment</h3>
+<ul>
+<li>Will use Elm to implement the language</li>
+<li>We are providing a fork link to an online Elm IDE on <code>stabl.rocks</code>
+<ul>
+<li>A code skeleton of the implementation is given</li>
+<li>Follow along with the live demo and implement the type inference algorithm</li>
+<li>Parsing and testing also provided in the code</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org5dc9214">
+<h2 id="org5dc9214">Syntax</h2>
+<ul>
+<li>Simply typed lambda calculus (STLC):
+<ul>
+<li><b>Variables</b></li>
+<li><b>Function declarations</b></li>
+<li><b>Function application</b></li>
+
+</ul></li>
+<li>With some extensions:
+<ul>
+<li><code>if-then-else</code> expressions</li>
+<li>Constants: <code>booleans</code> and <code>integers</code></li>
+<li>Binary operations</li>
+<li>Predicates</li>
+<li><b>Type annotations</b></li>
+
+</ul></li>
+
+</ul>
+
+</section>
+<section id="slide-org97ce19a">
+<h3 id="org97ce19a">Example code we could write</h3>
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim><span style="color: #75715E;">-- </span><span style="color: #75715E;">If-then-else</span>
+<span style="color: #F92672;">if</span> <span style="color: #AE81FF;">5</span> <span style="color: #F92672;">&lt;</span> <span style="color: #F92672;">-</span><span style="color: #AE81FF;">10</span> <span style="color: #F92672;">then</span> <span style="color: #AE81FF;">2</span> <span style="color: #F92672;">else</span> <span style="color: #AE81FF;">1</span> <span style="color: #F92672;">:</span> <span style="color: #66D9EF;">IntegerTy</span>
+<span style="color: #75715E;">-- </span><span style="color: #75715E;">Boolean expressions</span>
+<span style="color: #66D9EF;">True</span> <span style="color: #F92672;">&amp;&amp;</span> <span style="color: #66D9EF;">False</span> <span style="color: #F92672;">:</span> <span style="color: #66D9EF;">BooleanTy</span>
+<span style="color: #75715E;">-- </span><span style="color: #75715E;">Lambdas</span>
+<span style="color: #F92672;">\</span>x <span style="color: #F92672;">-&gt;</span> <span style="color: #F92672;">if</span> x <span style="color: #F92672;">&lt;</span> <span style="color: #AE81FF;">2</span> <span style="color: #F92672;">then</span> x <span style="color: #F92672;">+</span> <span style="color: #AE81FF;">1</span> <span style="color: #F92672;">else</span> x <span style="color: #F92672;">+</span> <span style="color: #AE81FF;">2</span>
+<span style="color: #75715E;">-- </span><span style="color: #75715E;">Function application</span>
+<span style="color: #AE81FF;">(</span><span style="color: #A6E22E;">\x -&gt; x</span><span style="color: #AE81FF;">)</span> <span style="color: #AE81FF;">2</span> <span style="color: #F92672;">:</span> <span style="color: #66D9EF;">IntegerTy</span>
+</code></pre>
+</div>
+
+<p>
+But first, we need an Abstract Syntax Tree (AST) representation
+</p>
+
+</section>
+<section id="slide-org260d987">
+<h3 id="org260d987">Elm code</h3>
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim><span style="color: #F92672;">type</span> <span style="color: #66D9EF;">Expr</span> 
+  <span style="color: #F92672;">=</span> <span style="color: #66D9EF;">Var</span> <span style="color: #66D9EF;">String</span> 
+  <span style="color: #F92672;">|</span> <span style="color: #66D9EF;">FunDecl</span> <span style="color: #66D9EF;">String</span> <span style="color: #75715E;">{-input variable-}</span> <span style="color: #66D9EF;">Expr</span> <span style="color: #75715E;">{-body-}</span>
+  <span style="color: #F92672;">|</span> <span style="color: #66D9EF;">FunApp</span> <span style="color: #66D9EF;">Expr</span> <span style="color: #75715E;">{- e1 -}</span> <span style="color: #66D9EF;">Expr</span> <span style="color: #75715E;">{- e2 -}</span>
+  <span style="color: #F92672;">|</span> <span style="color: #66D9EF;">Ann</span> <span style="color: #66D9EF;">Expr</span> <span style="color: #66D9EF;">Ty</span>
+<span style="color: #75715E;">-- </span><span style="color: #75715E;">Not covered in presentation but is in the provided code</span>
+  <span style="color: #F92672;">|</span> <span style="color: #66D9EF;">Integer</span> <span style="color: #66D9EF;">Int</span>
+  <span style="color: #F92672;">|</span> <span style="color: #66D9EF;">Boolean</span> <span style="color: #66D9EF;">Bool</span>
+  <span style="color: #F92672;">|</span> <span style="color: #66D9EF;">BinOp</span> <span style="color: #66D9EF;">Op</span> <span style="color: #66D9EF;">Expr</span> <span style="color: #66D9EF;">Expr</span>
+  <span style="color: #F92672;">|</span> <span style="color: #66D9EF;">PredOp</span> <span style="color: #66D9EF;">PredOp</span> <span style="color: #66D9EF;">Expr</span> <span style="color: #66D9EF;">Expr</span>
+  <span style="color: #F92672;">|</span> <span style="color: #66D9EF;">If</span> <span style="color: #66D9EF;">Expr</span> <span style="color: #75715E;">{-condition-}</span> <span style="color: #66D9EF;">Expr</span> <span style="color: #75715E;">{-then-}</span> <span style="color: #66D9EF;">Expr</span> <span style="color: #75715E;">{-else-}</span>
+</code></pre>
+</div>
+
+</section>
+<section id="slide-org184fd4f">
+<h3 id="org184fd4f">Types</h3>
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim><span style="color: #F92672;">type</span> <span style="color: #66D9EF;">Ty</span>
+  <span style="color: #F92672;">=</span> <span style="color: #66D9EF;">IntegerTy</span>
+  <span style="color: #F92672;">|</span> <span style="color: #66D9EF;">BooleanTy</span>
+  <span style="color: #F92672;">|</span> <span style="color: #66D9EF;">FunTy</span> <span style="color: #66D9EF;">Ty</span> <span style="color: #75715E;">{- -&gt; -}</span> <span style="color: #66D9EF;">Ty</span>
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgdba3a7c">
+<h3 id="orgdba3a7c">Examples</h3>
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim><span style="color: #75715E;">-- </span><span style="color: #75715E;">if 5 &lt; -10 then 2 else 1 : IntegerTy</span>
+<span style="color: #A6E22E;">ifExpr</span> <span style="color: #F92672;">=</span> <span style="color: #66D9EF;">Ann</span> <span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">If</span> <span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">PredOp</span> <span style="color: #66D9EF;">LT</span> <span style="color: #A6E22E;">(</span><span style="color: #66D9EF;">Integer</span> <span style="color: #AE81FF;">5</span><span style="color: #A6E22E;">)</span> <span style="color: #A6E22E;">(</span><span style="color: #66D9EF;">Integer</span> <span style="color: #E6DB74;">(</span><span style="color: #F92672;">-</span><span style="color: #AE81FF;">10</span><span style="color: #E6DB74;">)</span><span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">)</span>
+                 <span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">Integer</span> <span style="color: #AE81FF;">2</span><span style="color: #66D9EF;">)</span>
+                 <span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">Integer</span> <span style="color: #AE81FF;">1</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> <span style="color: #66D9EF;">IntegerTy</span>
+
+<span style="color: #75715E;">-- </span><span style="color: #75715E;">True &amp;&amp; False : BooleanTy</span>
+<span style="color: #A6E22E;">boolExpr</span> <span style="color: #F92672;">=</span> <span style="color: #66D9EF;">Ann</span> <span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">PredOp</span> <span style="color: #66D9EF;">And</span> <span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">Boolean</span> <span style="color: #66D9EF;">True</span><span style="color: #66D9EF;">)</span> <span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">Boolean</span> <span style="color: #66D9EF;">False</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> <span style="color: #66D9EF;">BooleanTy</span>
+
+<span style="color: #75715E;">-- </span><span style="color: #75715E;">\x -&gt; if x &lt; 2 then x + 1 else x + 2</span>
+<span style="color: #A6E22E;">funExpr</span> <span style="color: #F92672;">=</span> <span style="color: #66D9EF;">FunDecl</span> <span style="color: #E6DB74;">"x"</span> <span style="color: #F92672;">&lt;|</span>
+            <span style="color: #66D9EF;">If</span> <span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">PredOp</span> <span style="color: #66D9EF;">LT</span> <span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">Var</span> <span style="color: #E6DB74;">"x"</span><span style="color: #66D9EF;">)</span> <span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">Integer</span> <span style="color: #AE81FF;">2</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span>
+               <span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">BinOp</span> <span style="color: #66D9EF;">Plus</span> <span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">Var</span> <span style="color: #E6DB74;">"x"</span><span style="color: #66D9EF;">)</span> <span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">Integer</span> <span style="color: #AE81FF;">1</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span>
+               <span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">BinOp</span> <span style="color: #66D9EF;">Plus</span> <span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">Var</span> <span style="color: #E6DB74;">"x"</span><span style="color: #66D9EF;">)</span> <span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">Integer</span> <span style="color: #AE81FF;">2</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span>
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgd8af42e">
+<h3 id="orgd8af42e">Other Elm Prerequisites</h3>
+<ul>
+<li>We need to store the types of variables in a <b>context</b> \(\Gamma\) while running
+the algorithm</li>
+<li>We will use Elm's dictionary data structure provided in the standard library.</li>
+<li>Will use two operations:
+<ul>
+<li><code>Dict.get</code> gets the value associated to a key</li>
+<li><code>Dict.insert</code> inserts a key-value pair into a dictionary</li>
+
+</ul></li>
+<li><a href="https://package.elm-lang.org/packages/elm/core/latest/Dict">https://package.elm-lang.org/packages/elm/core/latest/Dict</a></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org98e2291">
+<h2 id="org98e2291">Type Judgments</h2>
+<div>
+\begin{prooftree}
+\AxiomC{$x : \tau \in \Gamma$}
+\RightLabel{$\texttt{T-VAR}$}
+\UnaryInfC{$\Gamma \vdash x:\tau$}
+\end{prooftree}
+
+</div>
+
+<ul>
+<li>The <i>premise</i> requires \(x : \tau\) to be in context \(\Gamma\)</li>
+<li>The <i>conclusion</i> says from \(\Gamma\) we deduce \(x : \tau\)</li>
+<li>\(\texttt{T-VAR}\) is the name of the judgment</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim><span style="color: #F92672;">import</span> <span style="color: #66D9EF;">Dict</span> <span style="color: #F92672;">exposing</span> <span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">Dict</span><span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">type</span> <span style="color: #F92672;">alias</span> <span style="color: #66D9EF;">Ctx</span> <span style="color: #F92672;">=</span> <span style="color: #66D9EF;">Dict</span> <span style="color: #66D9EF;">String</span> <span style="color: #66D9EF;">Ty</span>
+
+<span style="color: #A6E22E;">inferType</span> <span style="color: #F92672;">:</span> <span style="color: #66D9EF;">Ctx</span> <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Expr</span> <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Maybe</span> <span style="color: #66D9EF;">Ty</span>
+<span style="color: #A6E22E;">inferType</span> ctx expr <span style="color: #F92672;">=</span>
+  <span style="color: #F92672;">case</span> expr <span style="color: #F92672;">of</span>
+    <span style="color: #66D9EF;">Var</span> x <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Dict</span><span style="color: #F92672;">.</span>get x ctx
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgce99da5">
+<h3 id="orgce99da5">More Rules: Function application</h3>
+<div>
+\begin{prooftree}
+\AxiomC{$\Gamma \vdash e_1 : \tau_1 \rightarrow \tau_2$}
+\AxiomC{$\Gamma \vdash e_2 : \tau_1$}
+\RightLabel{$\texttt{T-APP}$}
+\BinaryInfC{$\Gamma \vdash e_1\ e_2 : \tau_2$}
+\end{prooftree}
+
+</div>
+
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim>    <span style="color: #66D9EF;">FunApp</span> e1 e2 <span style="color: #F92672;">-&gt;</span>
+      <span style="color: #F92672;">case</span> <span style="color: #AE81FF;">(</span>inferType ctx e1<span style="color: #F92672;">,</span> inferType ctx e2<span style="color: #AE81FF;">)</span> <span style="color: #F92672;">of</span>
+        <span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">Just</span> <span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">FunTy</span> t1 t2<span style="color: #66D9EF;">)</span><span style="color: #F92672;">,</span> <span style="color: #66D9EF;">Just</span> t11<span style="color: #AE81FF;">)</span> <span style="color: #F92672;">-&gt;</span>
+          <span style="color: #F92672;">if</span> t1 <span style="color: #F92672;">==</span> t11 <span style="color: #F92672;">then</span> <span style="color: #66D9EF;">Just</span> t2 <span style="color: #F92672;">else</span> <span style="color: #66D9EF;">Nothing</span>
+        _ <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Nothing</span>
+</code></pre>
+</div>
+
+
+</section>
+<section id="slide-org58711ee">
+<h3 id="org58711ee">A problem with Function declarations</h3>
+<div>
+\begin{prooftree}
+\AxiomC{$\Gamma, x : \tau_1 \vdash e : \tau_2$}
+\RightLabel{$\texttt{T-ABS}$}
+\UnaryInfC{$\Gamma \vdash \backslash x \rightarrow e : \tau_1 \rightarrow \tau_2$}
+\end{prooftree}
+
+</div>
+
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim>    <span style="color: #66D9EF;">FunDecl</span> x e <span style="color: #F92672;">-&gt;</span>
+      <span style="color: #F92672;">case</span> inferType <span style="color: #AE81FF;">(</span>ctx <span style="color: #F92672;">|&gt;</span> <span style="color: #66D9EF;">Dict</span><span style="color: #F92672;">.</span>insert x ???<span style="color: #AE81FF;">)</span> e <span style="color: #F92672;">of</span>
+        <span style="color: #66D9EF;">Just</span> ty2 <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Just</span> <span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">FunTy</span> ??? ty2<span style="color: #AE81FF;">)</span>
+        <span style="color: #66D9EF;">Nothing</span> <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Nothing</span>
+</code></pre>
+</div>
+
+<ul>
+<li>If this was Hindley-Milner we would use unification to provide a "guess" for ???</li>
+<li>Otherwise, need to "invent" a type for \(\tau_1\)&#x2026;</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgb10f976">
+<h2 id="orgb10f976">Bidirectional Type Checking</h2>
+<p>
+Split the typing judgment into two:
+</p>
+<ul>
+<li><i>Inference</i> mode \(\inp{\Gamma} \vdash \inp{t} \Rightarrow \outp{\tau}\)</li>
+<li><i>Checking</i> mode \(\inp{\Gamma} \vdash \inp{t} \Leftarrow \inp{\tau}\)</li>
+
+</ul>
+
+<p>
+\(\textcolor{blue}{\rule{2cm}{1cm}}\) is input
+</p>
+
+<p>
+\(\textcolor{orange}{\rule{2cm}{1cm}}\) is output
+</p>
+
+</section>
+<section id="slide-org3337e3a">
+<h3 id="org3337e3a">Flexibility</h3>
+<p>
+For each type judgments we choose to run in either <b><b>inference</b></b> or
+<b><b>checking</b></b> mode
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim><span style="color: #A6E22E;">inferType</span> <span style="color: #F92672;">:</span> <span style="color: #66D9EF;">Ctx</span> <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Expr</span> <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Maybe</span> <span style="color: #66D9EF;">Ty</span>
+<span style="color: #A6E22E;">inferType</span> ctx expr <span style="color: #F92672;">=</span>
+  <span style="color: #F92672;">case</span> expr <span style="color: #F92672;">of</span>
+      <span style="color: #F92672;">...</span>
+
+<span style="color: #A6E22E;">checkType</span> <span style="color: #F92672;">:</span> <span style="color: #66D9EF;">Ctx</span> <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Expr</span> <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Ty</span> <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Maybe</span> <span style="color: #66D9EF;">Ty</span>
+<span style="color: #A6E22E;">checkType</span> ctx expr ty <span style="color: #F92672;">=</span>
+  <span style="color: #F92672;">case</span> expr <span style="color: #F92672;">of</span>
+      <span style="color: #F92672;">...</span>
+</code></pre>
+</div>
+
+</section>
+<section id="slide-org0316c25">
+<h3 id="org0316c25">Additional Rule #1: Check-Infer</h3>
+<div>
+\begin{prooftree}
+\AxiomC{$\inp{\Gamma} \vdash \inp{t} \Rightarrow \inp{\tau}$}
+\RightLabel{$\texttt{BT-CHECKINFER}$}
+\UnaryInfC{$\inp{\Gamma} \vdash \inp{t} \Leftarrow \outp{\tau}$}
+\end{prooftree}
+
+</div>
+
+<ul>
+<li>Anytime we can check, we can also infer!</li>
+<li>A "catch-all" case in the implementation</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim><span style="color: #A6E22E;">checkType</span> ctx expr ty <span style="color: #F92672;">=</span>
+  <span style="color: #F92672;">case</span> expr <span style="color: #F92672;">of</span>
+    <span style="color: #F92672;">...</span>
+    _ <span style="color: #F92672;">-&gt;</span> <span style="color: #F92672;">case</span> inferType ctx expr <span style="color: #F92672;">of</span>
+      <span style="color: #66D9EF;">Just</span> ty1 <span style="color: #F92672;">-&gt;</span> <span style="color: #F92672;">if</span> ty <span style="color: #F92672;">==</span> ty1
+                  <span style="color: #F92672;">then</span> <span style="color: #66D9EF;">Just</span> ty
+                  <span style="color: #F92672;">else</span> <span style="color: #66D9EF;">Nothing</span>
+      <span style="color: #66D9EF;">Nothing</span> <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Nothing</span>
+</code></pre>
+</div>
+
+</section>
+<section id="slide-org33f04f1">
+<h3 id="org33f04f1">Additional Rule #2: Annotations</h3>
+<div>
+\begin{prooftree}
+\AxiomC{$\inp{\Gamma} \vdash \inp{t} \Leftarrow \outp{\tau} $}
+\RightLabel{$\texttt{BT-ANN}$}
+\UnaryInfC{$\inp{\Gamma} \vdash \inp{t : \tau} \Rightarrow \inp{\tau}$}
+\end{prooftree}
+
+</div>
+
+<p>
+Annotations can be inferred because we can use the annotation to check the type!
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim><span style="color: #A6E22E;">inferType</span> ctx expr <span style="color: #F92672;">=</span>
+  <span style="color: #F92672;">case</span> expr <span style="color: #F92672;">of</span>
+    <span style="color: #66D9EF;">Ann</span> e ty <span style="color: #F92672;">-&gt;</span> checkType ctx e ty
+</code></pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgaaa1bfb">
+<h2 id="orgaaa1bfb">Bidirectional Type Judgments</h2>
+<div class="outline-text-2" id="text-orgaaa1bfb">
+</div>
+</section>
+<section id="slide-org14ae21a">
+<h3 id="org14ae21a">Variables</h3>
+<div>
+\begin{prooftree}
+\AxiomC{$\inp{x} : \inp{\tau} \in \inp{\Gamma}$}
+\RightLabel{$\texttt{BT-VAR}$}
+\UnaryInfC{$\inp{\Gamma} \vdash \inp{x} \Rightarrow \outp{\tau}$}
+\end{prooftree}
+
+</div>
+
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim><span style="color: #A6E22E;">inferType</span> ctx expr <span style="color: #F92672;">=</span>
+  <span style="color: #F92672;">case</span> expr <span style="color: #F92672;">of</span> 
+    <span style="color: #66D9EF;">Var</span> x <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Dict</span><span style="color: #F92672;">.</span>get x ctx
+</code></pre>
+</div>
+
+</section>
+<section id="slide-org717fded">
+<h3 id="org717fded">Function Application</h3>
+<div>
+\begin{prooftree}
+\AxiomC{$\inp{\Gamma} \vdash \inp{e_1} \Rightarrow \outp{\tau_1\ \rightarrow\ \tau_2}$}
+\AxiomC{$\inp{\Gamma} \vdash \inp{e_2} \Leftarrow \inp{\tau_1}$}
+\RightLabel{$\texttt{BT-APP}$}
+\BinaryInfC{$\inp{\Gamma} \vdash \inp{e_1\ e_2} \Rightarrow \outp{\tau_2}$}
+\end{prooftree}
+
+</div>
+
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim><span style="color: #A6E22E;">inferType</span> ctx expr <span style="color: #F92672;">=</span>
+  <span style="color: #F92672;">case</span> expr <span style="color: #F92672;">of</span>
+    <span style="color: #F92672;">...</span>
+    <span style="color: #66D9EF;">FunApp</span> e1 e2 <span style="color: #F92672;">-&gt;</span>
+      <span style="color: #F92672;">case</span> <span style="color: #AE81FF;">(</span>inferType ctx e1<span style="color: #AE81FF;">)</span> <span style="color: #F92672;">of</span>
+        <span style="color: #66D9EF;">Just</span> <span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">FunTy</span> t1 t2<span style="color: #AE81FF;">)</span> <span style="color: #F92672;">-&gt;</span>
+          <span style="color: #F92672;">case</span> <span style="color: #AE81FF;">(</span>checkType ctx e2 t1<span style="color: #AE81FF;">)</span> <span style="color: #F92672;">of</span>
+            <span style="color: #66D9EF;">Just</span> t1b <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Just</span> t2
+            <span style="color: #66D9EF;">Nothing</span> <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Nothing</span>
+        _ <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Nothing</span>
+</code></pre>
+</div>
+
+</section>
+<section id="slide-org2989814">
+<h3 id="org2989814">Function Declarations</h3>
+<div>
+\begin{prooftree}
+\AxiomC{$\inp{\Gamma, x : \tau_1} \vdash \inp{e} \Leftarrow \inp{\tau_2}$}
+\RightLabel{$\texttt{BT-ABS}$}
+\UnaryInfC{$\inp{\Gamma} \vdash \inp{\backslash x \rightarrow e} \Leftarrow
+            \inp{\ \tau_1\ \rightarrow \tau_2}$}
+\end{prooftree}
+
+</div>
+
+<div class="org-src-container">
+
+<pre  class="src src-elm" ><code trim><span style="color: #A6E22E;">checkType</span> ctx expr ty <span style="color: #F92672;">=</span>
+  <span style="color: #F92672;">case</span> expr <span style="color: #F92672;">of</span>
+    <span style="color: #F92672;">...</span>
+    <span style="color: #66D9EF;">FunDecl</span> x e <span style="color: #F92672;">-&gt;</span>
+      <span style="color: #F92672;">case</span> ty <span style="color: #F92672;">of</span>
+        <span style="color: #66D9EF;">FunTy</span> t1 t2 <span style="color: #F92672;">-&gt;</span>
+          <span style="color: #F92672;">case</span> checkType <span style="color: #AE81FF;">(</span>ctx <span style="color: #F92672;">|&gt;</span> <span style="color: #66D9EF;">Dict</span><span style="color: #F92672;">.</span>insert x t1<span style="color: #AE81FF;">)</span> e t2 <span style="color: #F92672;">of</span>
+            <span style="color: #66D9EF;">Just</span> tt2 <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Just</span> ty
+            _ <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Nothing</span>
+        _ <span style="color: #F92672;">-&gt;</span> <span style="color: #66D9EF;">Nothing</span>
+</code></pre>
+</div>
+
+</section>
+<section id="slide-org2c930ca">
+<h3 id="org2c930ca">When to infer? When to check?</h3>
+<div>
+\begin{equation}
+\tiny
+
+\begin{prooftree}
+\AxiomC{$\inp{\Gamma} \vdash \inp{e_1} \Rightarrow \outp{\tau_1\ \rightarrow\ \tau_2}$}
+\AxiomC{$\inp{\Gamma} \vdash \inp{e_2} \Leftarrow \inp{\tau_1}$}
+\RightLabel{$\texttt{BT-APP}$}
+\BinaryInfC{$\inp{\Gamma} \vdash \inp{e_1\ e_2} \Rightarrow \outp{\tau_2}$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\inp{\Gamma, x : \tau_1} \vdash \inp{e} \Leftarrow \inp{\tau_2}$}
+\RightLabel{$\texttt{BT-ABS}$}
+\UnaryInfC{$\inp{\Gamma} \vdash \inp{\backslash x \rightarrow e} \Leftarrow
+            \inp{\ \tau_1\ \rightarrow \tau_2}$}
+\end{prooftree}
+
+\end{equation}
+
+</div>
+
+<ul>
+<li><code>BT-APP</code>'s conclusion only has \(\tau_2\). We can't "invent" a type for \(e_1\)!
+<ul>
+<li>Inferring \(e_1\) gives all required information, allowing us to synthesize \(\tau_2\) and
+check \(e_2\)</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+<section id="slide-org831f5bb">
+<h3 id="org831f5bb">When to infer? When to check?</h3>
+<div>
+\begin{equation}
+\tiny
+\begin{prooftree}
+\AxiomC{$\inp{\Gamma} \vdash \inp{e_1} \Rightarrow \outp{\tau_1\ \rightarrow\ \tau_2}$}
+\AxiomC{$\inp{\Gamma} \vdash \inp{e_2} \Leftarrow \inp{\tau_1}$}
+\RightLabel{$\texttt{BT-APP}$}
+\BinaryInfC{$\inp{\Gamma} \vdash \inp{e_1\ e_2} \Rightarrow \outp{\tau_2}$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\inp{\Gamma, x : \tau_1} \vdash \inp{e} \Leftarrow \inp{\tau_2}$}
+\RightLabel{$\texttt{BT-ABS}$}
+\UnaryInfC{$\inp{\Gamma} \vdash \inp{\backslash x \rightarrow e} \Leftarrow
+            \inp{\ \tau_1\ \rightarrow \tau_2}$}
+\end{prooftree}
+\end{equation}
+
+</div>
+
+<ul>
+<li><code>BT-ABS</code> is run in check mode so we don't have to "guess" \(\tau_1\).
+<ul>
+<li>This relies on a top-level type annotation for top-level declarations</li>
+<li>Nested functions <i>should</i> have have their types already in the context!</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+<section id="slide-orga201f4d">
+<h3 id="orga201f4d">General comments on check vs infer</h3>
+<ul>
+<li>Rule of thumb: Can always check, can't always infer
+<ul>
+<li>Check puts burden of annotation to the user</li>
+<li>Infer puts the burden on the algorithm</li>
+
+</ul></li>
+<li>Another explanation: Constructors are checked, "deconstructors" are inferred
+<ul>
+<li>Function declarations "construct" a function, so we check it</li>
+<li>Function applications "deconstruct" functions by applying them, so we infer.</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org2896c59">
+<h2 id="org2896c59">Conclusion</h2>
+<div class="outline-text-2" id="text-org2896c59">
+</div>
+</section>
+<section id="slide-org04f53b8">
+<h3 id="org04f53b8">More Features</h3>
+<ul>
+<li>Let-in expressions</li>
+<li>Recursion</li>
+<li>Tuples, Algebraic Data Types</li>
+<li>Polymorphism</li>
+<li>Other features?</li>
+
+</ul>
+
+</section>
+<section id="slide-org56df980">
+<h3 id="org56df980">Make it "Production Ready"</h3>
+<ul>
+<li><code>Maybe</code> type doesn't give error messages when failure happens</li>
+<li>Use <code>Result</code> / <code>Either</code> to attach error messages</li>
+
+</ul>
+
+</section>
+<section id="slide-orgdcecab2">
+<h3 id="orgdcecab2">Other resources</h3>
+
+</section>
+</section>
+<section>
+<section id="slide-orged371b2">
+<h2 id="orged371b2">Thank you!</h2>
+<p>
+The STaBL Foundation welcomes volunteers. We teach coding to grade-school kids.
+</p>
+
+
+<p>
+This year we are expanding our program to various languages. We still
+need translations of other languages in our ShapeCreator app:
+</p>
+
+<p>
+<a href="https://stablfoundation.org/SC4.html">https://stablfoundation.org/SC4.html</a>
+</p>
+</section>
+</section>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js/plugin/markdown/markdown.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js/plugin/zoom/zoom.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js/plugin/notes/notes.js"></script>
+
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+plugins: [RevealMarkdown,RevealZoom,RevealNotes],
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+]
+});
+
+
+</script>
+</body>
+</html>
