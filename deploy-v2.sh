@@ -8,8 +8,8 @@ git checkout master
 
 # Build new files
 cd mysite
-stack exec mysite clean
-stack exec mysite build
+stack exec docs clean
+stack exec docs build
 cd ..
 
 # Commit
