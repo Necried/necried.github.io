@@ -58,11 +58,10 @@ main = do
                 >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
 
-    match "CNAME" $ return ()
-
-    match "resume.pdf" $ do
+    create ["resume.pdf", "CNAME"] $ do
       route idRoute
-
+      compile copyFileCompiler
+      
     match "index.html" $ do
         route idRoute
         compile $ do
