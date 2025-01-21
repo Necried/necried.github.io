@@ -1,0 +1,4 @@
+cradle:
+  stack:
+    - path: "././site.hs"
+      component: "mysite:exe:mysite"
