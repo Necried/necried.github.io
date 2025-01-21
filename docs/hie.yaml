@@ -1,4 +1,0 @@
-cradle:
-  stack:
-    - path: "././site.hs"
-      component: "docs:exe:docs"
