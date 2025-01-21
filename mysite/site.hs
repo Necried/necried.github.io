@@ -60,6 +60,9 @@ main = do
 
     match "CNAME" $ return ()
 
+    match "resume.pdf" $ do
+      route idRoute
+
     match "index.html" $ do
         route idRoute
         compile $ do
