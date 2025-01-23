@@ -33,10 +33,10 @@
 
 
 <section>
-<section id="slide-orgba8dad6">
-<h2 id="orgba8dad6">Intro</h2>
+<section id="slide-orgd879e47">
+<h2 id="orgd879e47">Intro</h2>
 
-<div id="org5fb1c75" class="figure">
+<div id="orgff6da15" class="figure">
 <p><img src="./my_photo.png" alt="my_photo.png" />
 </p>
 </div>
@@ -57,8 +57,8 @@ Interests: Functional programming, type theory
 </section>
 </section>
 <section>
-<section id="slide-orge9249c6">
-<h2 id="orge9249c6">Motivation</h2>
+<section id="slide-orgc23b223">
+<h2 id="orgc23b223">Motivation</h2>
 <ul>
 <li>Most modern languages have <b>types</b> attached to <b>values</b></li>
 <li>e.g. <code>Bool</code>, <code>Int</code>, <code>List Int</code></li>
@@ -70,8 +70,8 @@ annotation to check types!</li>
 </ul>
 
 </section>
-<section id="slide-org3c5a894">
-<h3 id="org3c5a894">Example</h3>
+<section id="slide-org7b353cc">
+<h3 id="org7b353cc">Example</h3>
 <p>
 Do the types in this program make sense?
 </p>
@@ -82,8 +82,8 @@ Do the types in this program make sense?
 </div>
 
 </section>
-<section id="slide-orge5dc769">
-<h3 id="orge5dc769">Example, cont'd:</h3>
+<section id="slide-orge18bd18">
+<h3 id="orge18bd18">Example, cont'd:</h3>
 <pre  class="example">
 The 2nd branch of this `if` does not match all the previous branches:
 
@@ -103,8 +103,8 @@ Note that we didn't supply any types to the compiler - type inference at work!
 </p>
 
 </section>
-<section id="slide-org86ee866">
-<h3 id="org86ee866">Why Bidirectional Type Inference?</h3>
+<section id="slide-org8b42d36">
+<h3 id="org8b42d36">Why Bidirectional Type Inference?</h3>
 <ul>
 <li>Our Elm example above only uses <i>type inference</i></li>
 <li>Elm uses Hindley-Milner (HM) type inference:
@@ -119,11 +119,11 @@ inferencing is done</li>
 </ul>
 
 </section>
-<section id="slide-org8256220">
-<h3 id="org8256220">Why Bidirectional Type Inference, Part 2</h3>
+<section id="slide-orgf019242">
+<h3 id="orgf019242">Why Bidirectional Type Inference, Part 2</h3>
 <ul>
 <li>Bidirectional type inference: simple one-pass method implemented as two
-mutually recursive functions, <code>check</code> and <code>ifer</code></li>
+mutually recursive functions, <code>check</code> and <code>infer</code></li>
 <li>A simpler structure means the user must provide more type annotations (e.g.
 top-level functions)</li>
 <li>Errors will be better localized</li>
@@ -133,8 +133,8 @@ top-level functions)</li>
 </section>
 </section>
 <section>
-<section id="slide-orgdc35cd8">
-<h2 id="orgdc35cd8">Roadmap</h2>
+<section id="slide-org00402da">
+<h2 id="org00402da">Roadmap</h2>
 <ul>
 <li>Define a simple language (<b>Syntax</b>)</li>
 <li>Define <b>types</b> for our language</li>
@@ -143,8 +143,8 @@ top-level functions)</li>
 </ul>
 
 </section>
-<section id="slide-org1d41601">
-<h3 id="org1d41601">Environment</h3>
+<section id="slide-org46313d5">
+<h3 id="org46313d5">Environment</h3>
 <ul>
 <li>Will use Elm to implement the language</li>
 <li>We are providing a fork link to an online Elm IDE on <code>stabl.rocks</code>
@@ -160,8 +160,8 @@ top-level functions)</li>
 </section>
 </section>
 <section>
-<section id="slide-org6c9a754">
-<h2 id="org6c9a754">Syntax</h2>
+<section id="slide-org5729bc1">
+<h2 id="org5729bc1">Syntax</h2>
 <ul>
 <li>Simply typed lambda calculus (STLC):
 <ul>
@@ -183,8 +183,8 @@ top-level functions)</li>
 </ul>
 
 </section>
-<section id="slide-org5dd4c17">
-<h3 id="org5dd4c17">Example code we could write</h3>
+<section id="slide-orgf54f0b9">
+<h3 id="orgf54f0b9">Example code we could write</h3>
 <div class="org-src-container">
 
 <pre  class="src src-elm" ><code trim><span style="color: #75715E;">-- </span><span style="color: #75715E;">If-then-else</span>
@@ -203,8 +203,8 @@ But first, we need an Abstract Syntax Tree (AST) representation
 </p>
 
 </section>
-<section id="slide-org8403d5e">
-<h3 id="org8403d5e">Elm code</h3>
+<section id="slide-org2e3db2a">
+<h3 id="org2e3db2a">Elm code</h3>
 <div class="org-src-container">
 
 <pre  class="src src-elm" ><code trim><span style="color: #F92672;">type</span> <span style="color: #66D9EF;">Expr</span> 
@@ -222,8 +222,8 @@ But first, we need an Abstract Syntax Tree (AST) representation
 </div>
 
 </section>
-<section id="slide-org2eb3ac7">
-<h3 id="org2eb3ac7">Types</h3>
+<section id="slide-orgfc6eb50">
+<h3 id="orgfc6eb50">Types</h3>
 <div class="org-src-container">
 
 <pre  class="src src-elm" ><code trim><span style="color: #F92672;">type</span> <span style="color: #66D9EF;">Ty</span>
@@ -234,8 +234,8 @@ But first, we need an Abstract Syntax Tree (AST) representation
 </div>
 
 </section>
-<section id="slide-org3f6dbe7">
-<h3 id="org3f6dbe7">Examples</h3>
+<section id="slide-org83ddc29">
+<h3 id="org83ddc29">Examples</h3>
 <div class="org-src-container">
 
 <pre  class="src src-elm" ><code trim><span style="color: #75715E;">-- </span><span style="color: #75715E;">if 5 &lt; -10 then 2 else 1 : IntegerTy</span>
@@ -255,8 +255,8 @@ But first, we need an Abstract Syntax Tree (AST) representation
 </div>
 
 </section>
-<section id="slide-org74b4f24">
-<h3 id="org74b4f24">Other Elm Prerequisites</h3>
+<section id="slide-org46051d6">
+<h3 id="org46051d6">Other Elm Prerequisites</h3>
 <ul>
 <li>We need to store the types of variables in a <b>context</b> \(\Gamma\) while running
 the algorithm</li>
@@ -274,8 +274,8 @@ the algorithm</li>
 </section>
 </section>
 <section>
-<section id="slide-orge0a050c">
-<h2 id="orge0a050c">Type Judgments</h2>
+<section id="slide-org86cd4d4">
+<h2 id="org86cd4d4">Type Judgments</h2>
 <div>
 \begin{prooftree}
 \AxiomC{$x : \tau \in \Gamma$}
@@ -305,8 +305,8 @@ the algorithm</li>
 </div>
 
 </section>
-<section id="slide-orgdc98308">
-<h3 id="orgdc98308">More Rules: Function application</h3>
+<section id="slide-org97d8f84">
+<h3 id="org97d8f84">More Rules: Function application</h3>
 <div>
 \begin{prooftree}
 \AxiomC{$\Gamma \vdash e_1 : \tau_1 \rightarrow \tau_2$}
@@ -329,8 +329,8 @@ the algorithm</li>
 
 
 </section>
-<section id="slide-org83ac713">
-<h3 id="org83ac713">A problem with Function declarations</h3>
+<section id="slide-orgaf171be">
+<h3 id="orgaf171be">A problem with Function declarations</h3>
 <div>
 \begin{prooftree}
 \AxiomC{$\Gamma, x : \tau_1 \vdash e : \tau_2$}
@@ -358,8 +358,8 @@ the algorithm</li>
 </section>
 </section>
 <section>
-<section id="slide-org34967c0">
-<h2 id="org34967c0">Bidirectional Type Checking</h2>
+<section id="slide-org7391516">
+<h2 id="org7391516">Bidirectional Type Checking</h2>
 <p>
 Split the typing judgment into two:
 </p>
@@ -378,8 +378,8 @@ Split the typing judgment into two:
 </p>
 
 </section>
-<section id="slide-org893c6f1">
-<h3 id="org893c6f1">Flexibility</h3>
+<section id="slide-orgfed4c23">
+<h3 id="orgfed4c23">Flexibility</h3>
 <p>
 For each type judgments we choose to run in either <b><b>inference</b></b> or
 <b><b>checking</b></b> mode
@@ -400,8 +400,8 @@ For each type judgments we choose to run in either <b><b>inference</b></b> or
 </div>
 
 </section>
-<section id="slide-orgd96c9d7">
-<h3 id="orgd96c9d7">Additional Rule #1: Check-Infer</h3>
+<section id="slide-org2664935">
+<h3 id="org2664935">Additional Rule #1: Check-Infer</h3>
 <div>
 \begin{prooftree}
 \AxiomC{$\inp{\Gamma} \vdash \inp{t} \Rightarrow \inp{\tau}$}
@@ -431,8 +431,8 @@ For each type judgments we choose to run in either <b><b>inference</b></b> or
 </div>
 
 </section>
-<section id="slide-orgf931007">
-<h3 id="orgf931007">Additional Rule #2: Annotations</h3>
+<section id="slide-org5b0d778">
+<h3 id="org5b0d778">Additional Rule #2: Annotations</h3>
 <div>
 \begin{prooftree}
 \AxiomC{$\inp{\Gamma} \vdash \inp{t} \Leftarrow \outp{\tau} $}
@@ -457,13 +457,13 @@ Annotations can be inferred because we can use the annotation to check the type!
 </section>
 </section>
 <section>
-<section id="slide-org614df45">
-<h2 id="org614df45">Bidirectional Type Judgments</h2>
-<div class="outline-text-2" id="text-org614df45">
+<section id="slide-orge10cde5">
+<h2 id="orge10cde5">Bidirectional Type Judgments</h2>
+<div class="outline-text-2" id="text-orge10cde5">
 </div>
 </section>
-<section id="slide-orgaebfc1d">
-<h3 id="orgaebfc1d">Variables</h3>
+<section id="slide-org7eede13">
+<h3 id="org7eede13">Variables</h3>
 <div>
 \begin{prooftree}
 \AxiomC{$\inp{x} : \inp{\tau} \in \inp{\Gamma}$}
@@ -482,8 +482,8 @@ Annotations can be inferred because we can use the annotation to check the type!
 </div>
 
 </section>
-<section id="slide-orga239b23">
-<h3 id="orga239b23">Function Application</h3>
+<section id="slide-orgf1487b3">
+<h3 id="orgf1487b3">Function Application</h3>
 <div>
 \begin{prooftree}
 \AxiomC{$\inp{\Gamma} \vdash \inp{e_1} \Rightarrow \outp{\tau_1\ \rightarrow\ \tau_2}$}
@@ -510,8 +510,8 @@ Annotations can be inferred because we can use the annotation to check the type!
 </div>
 
 </section>
-<section id="slide-orge5594ca">
-<h3 id="orge5594ca">Function Declarations</h3>
+<section id="slide-org672e59a">
+<h3 id="org672e59a">Function Declarations</h3>
 <div>
 \begin{prooftree}
 \AxiomC{$\inp{\Gamma, x : \tau_1} \vdash \inp{e} \Leftarrow \inp{\tau_2}$}
@@ -538,8 +538,8 @@ Annotations can be inferred because we can use the annotation to check the type!
 </div>
 
 </section>
-<section id="slide-orgb072e92">
-<h3 id="orgb072e92">When to infer? When to check?</h3>
+<section id="slide-org9c808f8">
+<h3 id="org9c808f8">When to infer? When to check?</h3>
 <div>
 \begin{equation}
 \tiny
@@ -573,8 +573,8 @@ check \(e_2\)</li>
 </ul>
 
 </section>
-<section id="slide-org8648c71">
-<h3 id="org8648c71">When to infer? When to check?</h3>
+<section id="slide-orgef586e5">
+<h3 id="orgef586e5">When to infer? When to check?</h3>
 <div>
 \begin{equation}
 \tiny
@@ -606,8 +606,8 @@ check \(e_2\)</li>
 </ul>
 
 </section>
-<section id="slide-org1ceaebe">
-<h3 id="org1ceaebe">General comments on check vs infer</h3>
+<section id="slide-org08a622f">
+<h3 id="org08a622f">General comments on check vs infer</h3>
 <ul>
 <li>Rule of thumb: Can always check, can't always infer
 <ul>
@@ -627,13 +627,13 @@ check \(e_2\)</li>
 </section>
 </section>
 <section>
-<section id="slide-org7c41917">
-<h2 id="org7c41917">Conclusion</h2>
-<div class="outline-text-2" id="text-org7c41917">
+<section id="slide-org9f3a842">
+<h2 id="org9f3a842">Conclusion</h2>
+<div class="outline-text-2" id="text-org9f3a842">
 </div>
 </section>
-<section id="slide-org6676fd6">
-<h3 id="org6676fd6">More Features</h3>
+<section id="slide-org1766f3a">
+<h3 id="org1766f3a">More Features</h3>
 <ul>
 <li>Let-in expressions</li>
 <li>Recursion</li>
@@ -644,8 +644,8 @@ check \(e_2\)</li>
 </ul>
 
 </section>
-<section id="slide-org6d4b76e">
-<h3 id="org6d4b76e">Make it "Production Ready"</h3>
+<section id="slide-orgece5f6f">
+<h3 id="orgece5f6f">Make it "Production Ready"</h3>
 <ul>
 <li><code>Maybe</code> type doesn't give error messages when failure happens</li>
 <li>Use <code>Result</code> / <code>Either</code> to attach error messages</li>
@@ -653,8 +653,8 @@ check \(e_2\)</li>
 </ul>
 
 </section>
-<section id="slide-org9a951c3">
-<h3 id="org9a951c3">Other resources</h3>
+<section id="slide-org681fb33">
+<h3 id="org681fb33">Other resources</h3>
 <ul>
 <li><a href="https://www.youtube.com/watch?v=utyBNDj7s2w">Talk by David Christiansen on Bidirectional Type Checking</a></li>
 <li><a href="https://davidchristiansen.dk/tutorials/bidirectional.pdf">Tutorial Paper by David Christiansen</a></li>
@@ -664,8 +664,8 @@ check \(e_2\)</li>
 </section>
 </section>
 <section>
-<section id="slide-org024c350">
-<h2 id="org024c350">Thank you!</h2>
+<section id="slide-orgcce009a">
+<h2 id="orgcce009a">Thank you!</h2>
 <p>
 The STaBL Foundation welcomes volunteers. We teach coding to grade-school kids.
 </p>
