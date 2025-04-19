@@ -58,7 +58,7 @@ main = do
                 >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
 
-    create ["resume.pdf", "CNAME"] $ do
+    create ["resume.pdf", "CNAME", "visualizer.html"] $ do
       route idRoute
       compile copyFileCompiler
 
