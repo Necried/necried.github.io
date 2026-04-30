@@ -65,6 +65,10 @@ main = do
     match "FunctionalConf2025/*" $ do
       route idRoute
       compile copyFileCompiler
+
+    match "SONAD2026/*" $ do
+      route idRoute
+      compile copyFileCompiler
       
     match "index.html" $ do
         route idRoute
